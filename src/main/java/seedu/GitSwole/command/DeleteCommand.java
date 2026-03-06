@@ -1,8 +1,40 @@
-package seedu.GitSwole;
+package seedu.GitSwole.command;
 
-public class Delete {
+import seedu.GitSwole.assets.WorkoutList;
+import seedu.GitSwole.exceptions.GitSwoleException;
+import seedu.GitSwole.ui.Ui;
 
-    public static void execute(String arguments) {
+/**
+ * Represents a command that deletes a workout or an exercise from the workout list.
+ * <p>
+ * Supported formats:
+ * <ul>
+ *   <li>{@code delete w/WORKOUT} — removes the specified workout</li>
+ *   <li>{@code delete e/EXERCISE w/WORKOUT} — removes the specified exercise from a workout</li>
+ * </ul>
+ */
+public class DeleteCommand extends Command{
+    private String arguments;
+
+    /**
+     * Constructs a DeleteCommand with the raw user input string.
+     *
+     * @param arguments The full command string entered by the user.
+     */
+    public DeleteCommand(String arguments){
+        this.arguments = arguments;
+    }
+
+    /**
+     * Executes the delete command by determining whether to remove a workout or an exercise,
+     * based on the flags present in the input.
+     *
+     * @param workouts The current list of workouts.
+     * @param ui       The user interface for displaying results or error messages.
+     * @throws GitSwoleException If the input format is invalid or required fields are missing.
+     */
+    @Override
+    public void execute(WorkoutList workouts, Ui ui) throws GitSwoleException {
         // Check if the user is trying to delete an exercise (contains "e/")
         if (arguments.contains("e/")) {
             deleteExercise(arguments);
@@ -18,6 +50,11 @@ public class Delete {
         }
     }
 
+    /**
+     * Parses the input and deletes the specified workout from the workout list.
+     *
+     * @param arguments The raw argument string containing the {@code w/} prefix.
+     */
     private static void deleteWorkout(String arguments) {
         // Extract the workout name by removing the "w/" prefix
         String workoutName = arguments.replace("w/", "").trim();
@@ -28,9 +65,15 @@ public class Delete {
         }
 
         String formattedName = workoutName.substring(0, 1).toUpperCase() + workoutName.substring(1);
+
         System.out.println("Successfully deleted a " + formattedName + " Session!");
     }
 
+    /**
+     * Parses the input and deletes the specified exercise from the target workout.
+     *
+     * @param arguments The raw argument string containing both {@code e/} and {@code w/} prefixes.
+     */
     private static void deleteExercise(String arguments) {
         int eIndex = arguments.indexOf("e/");
         int wIndex = arguments.indexOf("w/");
@@ -57,4 +100,5 @@ public class Delete {
 
         System.out.println("Your exercise has been successfully deleted!");
     }
+
 }
