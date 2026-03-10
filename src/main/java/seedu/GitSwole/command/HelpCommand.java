@@ -47,14 +47,14 @@ public class HelpCommand extends Command{
 
 		// Commands
 		System.out.printf(format, "Add Workout", "add w/WORKOUT", "add w/push");
-		System.out.printf(format, "Add Exercise", "add e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SETS] [r/REPS]", "add e/benchpress w/push 40 3 8");
-		System.out.printf(format, "Delete Workout", "deleteworkout w/WORKOUT", "deleteworkout w/push");
-		System.out.printf(format, "Delete Exercise", "deleteexercise e/EXERCISE w/WORKOUT", "deleteexercise e/benchpress w/push");
+		System.out.printf(format, "Add Exercise", "add e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SETS] [r/REPS]", "add e/benchpress w/push wt/40 s/3 r/8");
+		System.out.printf(format, "Delete Workout", "delete w/WORKOUT", "delete w/push");
+		System.out.printf(format, "Delete Exercise", "delete e/EXERCISE w/WORKOUT", "delete e/benchpress w/push");
 		System.out.printf(format, "List Workouts", "list", "list");
 		System.out.printf(format, "List Exercises 1", "list w/workout", "list w/pull");
 		System.out.printf(format, "List Exercises 2", "list all", "list all");
-		System.out.printf(format, "Find Workout", "findworkout w/WORKOUT", "findworkout w/push");
-		System.out.printf(format, "Find Exercise", "findexercise e/EXERCISE w/WORKOUT", "findexercise e/benchpress w/push");
+		System.out.printf(format, "Find Workout", "find w/WORKOUT", "find w/push");
+		System.out.printf(format, "Find Exercise", "find e/EXERCISE w/WORKOUT", "find e/benchpress w/push");
 		System.out.printf(format, "Help", "help", "help");
 		System.out.printf(format, "Exit", "exit", "exit");
 

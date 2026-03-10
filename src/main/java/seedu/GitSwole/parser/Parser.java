@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class Parser {
 	enum CommandType {
-		ADD, DELETE, EXIT, HELP, LIST
+		ADD, DELETE, EXIT, HELP, LIST, FIND
 	}
 	private static final Map<String, CommandType> COMMAND_MAP = new HashMap<>();
 	static {
@@ -22,6 +22,7 @@ public class Parser {
 		COMMAND_MAP.put("exit",   CommandType.EXIT);
 		COMMAND_MAP.put("help",   CommandType.HELP);
 		COMMAND_MAP.put("list",   CommandType.LIST);
+		COMMAND_MAP.put("find",   CommandType.FIND);
 	}
 	private Ui ui;
 
@@ -56,6 +57,11 @@ public class Parser {
 				throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, command);
 			}
 			return new DeleteCommand(response);
+		case FIND:
+			if (words.length < 2) {
+				throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, command);
+			}
+			return new FindCommand(response);
 		case LIST:
 			return new ListCommand(response);
 		case HELP:
