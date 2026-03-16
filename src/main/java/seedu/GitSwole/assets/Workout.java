@@ -10,14 +10,17 @@ import java.util.ArrayList;
 public class Workout {
 	private ArrayList<Exercise> exerciseList;
 	private String workoutName;
+	private boolean isDone;
 
 	/**
-	 * Constructs a Workout with the given name and an empty exercise list.
+	 * Constructs a Workout with the given name, an empty exercise list,
+	 * and a default completion status of {@code false}.
 	 *
 	 * @param workoutName The name of the workout session.
 	 */
 	public Workout(String workoutName) {
 		this.exerciseList = new ArrayList<>();
+		this.isDone = false;
 		setWorkoutName(workoutName);
 	}
 
@@ -80,5 +83,23 @@ public class Workout {
 	 */
 	public void setWorkoutName(String workoutName) {
 		this.workoutName = workoutName;
+	}
+
+	/**
+	 * Returns whether this workout has been marked as done.
+	 *
+	 * @return {@code true} if done, {@code false} otherwise.
+	 */
+	public boolean isDone() {
+		return isDone;
+	}
+
+	/**
+	 * Sets the completion status of this workout.
+	 *
+	 * @param isDone {@code true} to mark as completed, {@code false} to unmark.
+	 */
+	public void markDone(boolean isDone) {
+		this.isDone = isDone;
 	}
 }
