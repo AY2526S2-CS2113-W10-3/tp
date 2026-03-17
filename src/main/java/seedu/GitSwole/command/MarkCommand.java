@@ -52,7 +52,7 @@ public class MarkCommand extends Command {
             throw new GitSwoleException(GitSwoleException.ErrorType.IDX_OUTOFBOUNDS, workoutName);
         }
 
-        target.markDone(true);
+        target.markDone(isDone);
 
         if (isDone) {
             ui.showMessage("[X] " + target.getWorkoutName());

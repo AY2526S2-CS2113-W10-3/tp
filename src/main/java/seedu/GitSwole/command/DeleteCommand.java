@@ -57,7 +57,7 @@ public class DeleteCommand extends Command {
      *
      * @param workouts The current list of workouts.
      */
-    private void deleteWorkout(WorkoutList workouts) {
+    private void deleteWorkout(WorkoutList workouts) throws GitSwoleException {
         int wIndex = arguments.indexOf("w/");
 
         // Extract the workout name by taking everything after "w/"
@@ -65,8 +65,9 @@ public class DeleteCommand extends Command {
 
         if (workoutName.isEmpty()) {
             logger.log(Level.WARNING, "DeleteWorkout failed: Workout name is empty.");
-            System.out.println("Please specify the workout name. Example: delete w/push");
-            return;
+            throw new GitSwoleException(
+                    GitSwoleException.ErrorType.INCOMPLETE_COMMAND,
+                    "Please specify the workout name. Usage: delete w/WORKOUT");
         }
 
         boolean isDeleted = workouts.removeWorkout(workoutName);
@@ -76,6 +77,9 @@ public class DeleteCommand extends Command {
             System.out.println("Successfully deleted the " + formattedName + " session!");
         } else {
             System.out.println("Workout '" + workoutName + "' not found!");
+            throw new GitSwoleException(
+                    GitSwoleException.ErrorType.NOT_FOUND,
+                    workoutName);
         }
     }
     /**
@@ -83,15 +87,17 @@ public class DeleteCommand extends Command {
      *
      * @param workouts The current list of workouts.
      */
-    private void deleteExercise(WorkoutList workouts) {
+    private void deleteExercise(WorkoutList workouts) throws GitSwoleException{
         int eIndex = arguments.indexOf("e/");
         int wIndex = arguments.indexOf("w/");
 
         // Ensure both prefixes exist and "e/" comes before "w/"
         if (eIndex == -1 || wIndex == -1 || eIndex > wIndex) {
             logger.log(Level.WARNING, "DeleteExercise failed: Invalid flag order or missing flags.");
-            System.out.println("Invalid format! Please use: delete e/EXERCISE w/WORKOUT");
-            return;
+            throw new GitSwoleException(
+                    GitSwoleException.ErrorType.INCOMPLETE_COMMAND,
+                    "Invalid format! Please use: delete e/EXERCISE w/WORKOUT"
+            );
         }
 
         // Extract the exercise name between "e/" and "w/"
@@ -104,8 +110,10 @@ public class DeleteCommand extends Command {
         if (exerciseName.isEmpty() || workoutName.isEmpty()) {
             logger.log(Level.WARNING, "DeleteExercise failed: Empty exercise ({0}) or workout ({1}) name.",
                     new Object[]{exerciseName, workoutName});
-            System.out.println("Exercise or Workout name cannot be empty.");
-            return;
+            throw new GitSwoleException(
+                    GitSwoleException.ErrorType.INCOMPLETE_COMMAND,
+                    "Exercise or Workout name cannot be empty. Usage: delete e/EXERCISE w/WORKOUT"
+            );
         }
 
         boolean isDeleted = workouts.removeExercise(workoutName, exerciseName);
@@ -113,7 +121,10 @@ public class DeleteCommand extends Command {
         if (isDeleted) {
             System.out.println("Successfully deleted '" + exerciseName + "' from '" + workoutName + "'!");
         } else {
-            System.out.println("Could not find that exercise or workout. Please check your spelling.");
+            throw new GitSwoleException(
+                    GitSwoleException.ErrorType.NOT_FOUND,
+                    exerciseName + "' or workout '" + workoutName
+            );
         }
     }
 }
