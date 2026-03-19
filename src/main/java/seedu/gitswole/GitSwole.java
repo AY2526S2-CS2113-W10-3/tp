@@ -17,7 +17,6 @@ public class GitSwole {
     private static final Logger logger = Logger.getLogger(GitSwole.class.getName());
     private static Ui ui;
     private static WorkoutList workouts = new WorkoutList();
-
     public GitSwole() {
         ui = new Ui();
     }
@@ -30,7 +29,6 @@ public class GitSwole {
         Parser parser = new Parser();
         ui.helloGreeting();
         boolean isExit = false;
-
         while (!isExit) {
             try {
                 String fullCommand = ui.readCommand();
