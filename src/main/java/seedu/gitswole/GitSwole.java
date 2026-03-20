@@ -4,6 +4,7 @@ import seedu.gitswole.assets.WorkoutList;
 import seedu.gitswole.command.Command;
 import seedu.gitswole.exceptions.GitSwoleException;
 import seedu.gitswole.parser.Parser;
+import seedu.gitswole.storage.Storage;
 import seedu.gitswole.ui.Ui;
 
 import java.util.logging.FileHandler;
@@ -19,11 +20,52 @@ import java.io.IOException;
  */
 public class GitSwole {
     private static final Logger logger = Logger.getLogger(GitSwole.class.getName());
+    private static final String STORAGE_FILE_PATH = "docs/workouts.txt";
+
     private static Ui ui;
     private static WorkoutList workouts = new WorkoutList();
+    private static Storage storage = new Storage(STORAGE_FILE_PATH);
+
     public GitSwole() {
         ui = new Ui();
+        workouts = loadWorkouts();
     }
+    /**
+     * Attempts to load workouts from the storage file on startup.
+     * If the file does not exist yet (first run), returns an empty WorkoutList silently.
+     * If the file is corrupted, warns the user and starts with an empty WorkoutList.
+     *
+     * @return A {@link WorkoutList} populated from disk, or a fresh empty one on failure.
+     */
+    private WorkoutList loadWorkouts() {
+        try {
+            WorkoutList loaded = storage.load();
+            logger.log(Level.INFO, "Loaded " + loaded.numOfWorkouts() + " workout from " + STORAGE_FILE_PATH);
+            return loaded;
+        } catch (Storage.StorageException e) {
+            logger.log(Level.WARNING, "Corrupted save file: " + e.getMessage());
+            ui.showError("Save file appears corrupted — starting with an empty workout list.\n" + e.getMessage());
+            return new WorkoutList();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Could not read save file: " + e.getMessage());
+            return new WorkoutList();
+        }
+    }
+
+    /**
+     * Attempts to save workouts to the storage file.
+     * Logs and shows an error to the user if saving fails.
+     */
+    private static void saveWorkouts() {
+        try {
+            storage.save(workouts);
+            logger.log(Level.INFO, "Workouts saved to " + STORAGE_FILE_PATH);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Could not save workouts: " + e.getMessage());
+            ui.showError("Warning: Could not save workouts. Your changes may not persist.\n" + e.getMessage());
+        }
+    }
+
 
     /**
      * Configures the application logger to write to {@code log.txt} instead of the terminal.
@@ -65,6 +107,7 @@ public class GitSwole {
                 String fullCommand = ui.readCommand();
                 Command c = parser.readResponse(fullCommand, workouts);
                 c.execute(workouts, ui);
+                saveWorkouts();
                 isExit = c.isExit();
             } catch (GitSwoleException e) {
                 logger.log(Level.WARNING, "GitSwoleException occurred: " + e.getMessage());

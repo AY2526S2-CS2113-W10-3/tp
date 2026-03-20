@@ -1,0 +1,3 @@
+WORKOUT | push | false
+EXERCISE | benchpress | 40 | 3 | 8
+---
