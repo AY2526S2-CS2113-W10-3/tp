@@ -82,6 +82,8 @@ Edit Exercise        | edit w/WORKOUT_NAME e/EXERCISE_NAME                      
 List Workouts        | list                                                         | list                          
 List Exercises       | list w/WORKOUT                                               | list w/pull                   
 List ALL Exercises   | list all                                                     | list all                      
+Log Session          | log w/WORKOUT                                                | log w/push                    
+Log Performance      | log e/EXERCISE w/WORKOUT wt/W s/S r/R                        | log e/bench w/push wt/60 s/3 r/8
 Find Workout         | find w/WORKOUT                                               | find w/push                   
 Find Exercise        | find e/EXERCISE w/WORKOUT                                    | find e/benchpress w/push      
 Help                 | help                                                         | help                          
