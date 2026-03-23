@@ -1,0 +1,172 @@
+@startuml ClassDiagram
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+
+skinparam classAttributeIconSize 0
+
+package "seedu.gitswole" {
+    class GitSwole {
+        - ui : Ui
+        - workouts : WorkoutList
+        + run() : void
+        + main(args : String[]) : void
+    }
+}
+
+package "seedu.gitswole.command" {
+    abstract class Command {
+        # isExit : boolean
+        + execute(workouts : WorkoutList, ui : Ui) : void
+        + isExit() : boolean
+    }
+
+    class AddCommand {
+        - response : String
+        + execute(workouts : WorkoutList, ui : Ui) : void
+        - handleAddWorkout(workouts : WorkoutList, ui : Ui) : void
+        - handleAddExercise(workouts : WorkoutList, ui : Ui) : void
+    }
+
+    class DeleteCommand {
+        - arguments : String
+        + execute(workouts : WorkoutList, ui : Ui) : void
+        - deleteWorkout(workouts : WorkoutList, ui : Ui) : void
+        - deleteExercise(workouts : WorkoutList, ui : Ui) : void
+    }
+
+    class ListCommand {
+        - arguments : String
+        + execute(workouts : WorkoutList, ui : Ui) : void
+        - handleListSummary(workouts : WorkoutList, ui : Ui) : void
+        - handleListWorkout(workouts : WorkoutList, ui : Ui) : void
+        - handleListAll(workouts : WorkoutList, ui : Ui) : void
+    }
+
+    class FindCommand {
+        - arguments : String
+        + execute(workouts : WorkoutList, ui : Ui) : void
+        - handleFindWorkout(workouts : WorkoutList, ui : Ui) : void
+        - handleFindExercise(workouts : WorkoutList, ui : Ui) : void
+    }
+
+    class HelpCommand {
+        + execute(workouts : WorkoutList, ui : Ui) : void
+        - printHelpMessage(ui : Ui) : void
+    }
+
+    class ExitCommand {
+        + execute(workouts : WorkoutList, ui : Ui) : void
+    }
+
+    Command <|-- AddCommand
+    Command <|-- DeleteCommand
+    Command <|-- ListCommand
+    Command <|-- FindCommand
+    Command <|-- HelpCommand
+    Command <|-- ExitCommand
+}
+
+package "seedu.gitswole.parser" {
+    class Parser {
+        - COMMAND_MAP : Map<String, CommandType>
+        - ui : Ui
+        + readResponse(response : String, workouts : WorkoutList) : Command
+        - parseCommand(input : String) : CommandType
+        + parseValue(input : String, prefix : String) : String
+        + parseOptionalInt(input : String, prefix : String, defaultValue : int) : int
+    }
+
+    enum CommandType {
+        ADD
+        DELETE
+        EXIT
+        HELP
+        LIST
+        FIND
+    }
+
+    Parser --> CommandType
+}
+
+package "seedu.gitswole.assets" {
+    class WorkoutList {
+        - workouts : ArrayList<Workout>
+        + addWorkout(workout : Workout) : void
+        + removeWorkout(name : String) : boolean
+        + removeExercise(workoutName : String, exerciseName : String) : boolean
+        + getWorkouts() : ArrayList<Workout>
+        + getWorkoutByName(name : String) : Workout
+        + numOfWorkouts() : int
+    }
+
+    class Workout {
+        - workoutName : String
+        - exerciseList : ArrayList<Exercise>
+        + addExercise(exercise : Exercise) : void
+        + removeExercise(exerciseName : String) : boolean
+        + getExerciseList() : ArrayList<Exercise>
+        + getWorkoutName() : String
+        + getNumOfExercises() : int
+    }
+
+    class Exercise {
+        - exerciseName : String
+        - weight : int
+        - sets : int
+        - reps : int
+        + getExerciseName() : String
+        + getWeight() : int
+        + getSets() : int
+        + getReps() : int
+    }
+
+    WorkoutList "1" *-- "0..*" Workout : contains
+    Workout "1" *-- "0..*" Exercise : contains
+}
+
+package "seedu.gitswole.ui" {
+    class Ui {
+        - in : Scanner
+        - dashes : int
+        + readCommand() : String
+        + helloGreeting() : void
+        + byeGreeting() : void
+        + showLine() : void
+        + showMessage(s : String) : void
+        + showError(message : String) : void
+        + printWorkouts(workouts : ArrayList<Workout>) : void
+        + printWorkout(workout : Workout) : void
+        + printExercise(exercise : Exercise) : void
+        + getDashes() : int
+    }
+}
+
+package "seedu.gitswole.exceptions" {
+    class GitSwoleException {
+        - type : ErrorType
+        - command : String
+        + getType() : ErrorType
+        + getCommand() : String
+        - buildMessage(type : ErrorType, command : String) : String
+    }
+
+    enum ErrorType {
+        INCOMPLETE_COMMAND
+        UNKNOWN_COMMAND
+        IDX_OUTOFBOUNDS
+        DEFAULT
+    }
+
+    GitSwoleException --> ErrorType
+}
+
+GitSwole --> Ui
+GitSwole --> WorkoutList
+GitSwole --> Parser
+Parser ..> Command : creates
+Command --> WorkoutList
+Command --> Ui
+Command ..> GitSwoleException : throws
+Parser ..> GitSwoleException : throws
+
+@enduml
