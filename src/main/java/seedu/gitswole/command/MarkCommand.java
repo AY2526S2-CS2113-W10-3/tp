@@ -3,8 +3,9 @@ package seedu.gitswole.command;
 import seedu.gitswole.assets.Workout;
 import seedu.gitswole.assets.WorkoutList;
 import seedu.gitswole.exceptions.GitSwoleException;
-import seedu.gitswole.parser.Parser;
 import seedu.gitswole.ui.Ui;
+import seedu.gitswole.parser.Parser;
+
 import java.util.logging.Level;
 
 /**
@@ -12,8 +13,7 @@ import java.util.logging.Level;
  * <p>
  * Supported format:
  * <ul>
- *   <li>{@code mark w/WORKOUT_NAME} — marks the named workout as completed</li>
- *   <li>{@code unmark w/WORKOUT_NAME} — unmarks the named workout</li>
+ *   <li>{@code mark WORKOUT_NAME} — marks the named workout as completed</li>
  * </ul>
  * The workout name may contain multiple words (e.g. {@code mark push day}).
  */
@@ -57,17 +57,23 @@ public class MarkCommand extends Command {
         String workoutName = Parser.parseValue(response, "w/");
 
         if (workoutName == null || workoutName.isEmpty()) {
-            LOGGER.log(Level.WARNING, "Command missing w/ flag or workout name");
+            LOGGER.log(Level.WARNING, "Mark/Unmark command missing w/ flag or workout name.");
             throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, parts[0]);
         }
-        Workout target = workouts.getWorkoutByName(workoutName);
 
+        if (workoutName == null || workoutName.isEmpty()) {
+            LOGGER.log(Level.WARNING, "Mark/Unmark command missing w/ flag or workout name.");
+            throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, parts[0]);
+        }
+
+        Workout target = workouts.getWorkoutByName(workoutName);
         if (target == null) {
             LOGGER.log(Level.WARNING, "Workout ''{0}'' not found.", workoutName);
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND, workoutName);
         }
-        target.markDone(isDone);
+        assert target != null : "Target workout must not be null after null check";
 
+        target.markDone(isDone);
         LOGGER.log(Level.INFO, "Workout ''{0}'' marked as {1}",
                 new Object[]{workoutName, isDone ? "done" : "not done"});
 

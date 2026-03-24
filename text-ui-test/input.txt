@@ -1,20 +1,16 @@
 add w/push
 add e/benchpress w/push wt/40 s/3 r/8
 list all
-edit w/push
-pushday
-list all
-edit w/pushday e/benchpress
-
-bench press
-50
-4
-10
-list all
-list w/pull
-find w/pushday
-find e/bench press w/pushday
-delete e/bench press w/pushday
-delete w/pushday
+list
+list w/push
+mark w/push
+list
+unmark w/push
+list
+mark w/nonexistent
+find w/push
+delete e/benchpress w/push
+delete w/push
 help
+james gosling
 exit
