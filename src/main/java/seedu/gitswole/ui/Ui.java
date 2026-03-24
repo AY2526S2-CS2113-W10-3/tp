@@ -136,13 +136,19 @@ public class Ui {
 
     private void printIndividualExercise(Exercise e, int i) {
         StringBuilder details = new StringBuilder();
-        if (e.getWeight() != 0) details.append(e.getWeight() + "kg");
+        if (e.getWeight() != 0) {
+            details.append(e.getWeight() + "kg");
+        }
         if (e.getSets() != 0) {
-            if (details.length() > 0) details.append(" | ");
+            if (details.length() > 0) {
+                details.append(" | ");
+            }
             details.append(e.getSets() + "s");
         }
         if (e.getReps() != 0) {
-            if (details.length() > 0) details.append(" | ");
+            if (details.length() > 0) {
+                details.append(" | ");
+            }
             details.append(e.getReps() + "r");
         }
 
