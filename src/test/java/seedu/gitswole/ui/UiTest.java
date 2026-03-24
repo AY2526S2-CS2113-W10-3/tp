@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.gitswole.assets.Exercise;
 import seedu.gitswole.assets.Workout;
-
+import seedu.gitswole.assets.WorkoutList;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -50,7 +50,8 @@ class UiTest {
     @Test
     @DisplayName("helloGreeting contains the welcome text")
     void helloGreeting_containsWelcomeText() {
-        ui.helloGreeting();
+        WorkoutList workouts = new WorkoutList();
+        ui.helloGreeting(workouts);
         assertTrue(outContent.toString().contains("Welcome to GitSwole"));
     }
 

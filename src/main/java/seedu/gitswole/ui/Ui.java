@@ -88,16 +88,27 @@ public class Ui {
         showMessage("| Workouts done    : " + done + " / " + total);
         showMessage("| Total exercises  : " + exercises);
         showLine();
-        if (done == 1)  showMessage("| First workout crushed! (*´▽`*) Current Tier: Coal");
-        if (done == 2)  showMessage("| Double kills! level up: Wood tier achieved (❛◡❛✿)");
-        if (done == 3)  showMessage("| Triple workout conquered! ヽ(●´∀`●)ﾉ Current Tier: Bronze");
-        if (done == 4)  showMessage("| Quadra kills! level up: Silver tier achieved Σヽ(ﾟД ﾟ; )ﾉ");
-        if (done == 5)  showMessage("| Rampage! Workouts are now enslaved. Current Tier: Gold (✘Д✘๑ )");
-        if (done == 6)  showMessage("| Killing spree! level up: Platinum tier ( • ̀ω•́ )");
-        if (done == 7)  showMessage("| Godlike! Workouts surrender to you,my lord. Current Tier: Diamond Σ( ° △ °|||)");
-        if (done == 8)  showMessage("| Aced! The iron obeys your command. Current Tier: Master w(ﾟДﾟ)w");
-        if (done == 9)  showMessage("| Unstoppable! You are the workout legend! Current Tier: Legendary (≖◡≖)");
-        if (done >= 10)  showMessage("| Congrats! ٩(๑•̀ω•́๑)۶ You've reached the highest tier: Eternal");
+        if (done == 1) {
+            showMessage("| First workout crushed! (*´▽`*) Current Tier: Coal");
+        } else if (done == 2) {
+            showMessage("| Double kills! level up: Wood tier achieved (❛◡❛✿)");
+        } else if (done == 3) {
+            showMessage("| Triple workout conquered! ヽ(●´∀`●)ﾉ Current Tier: Bronze");
+        } else if (done == 4) {
+            showMessage("| Quadra kills! level up: Silver tier achieved Σヽ(ﾟД ﾟ; )ﾉ");
+        } else if (done == 5) {
+            showMessage("| Rampage! Workouts are now enslaved. Current Tier: Gold (✘Д✘๑ )");
+        } else if (done == 6) {
+            showMessage("| Killing spree! level up: Platinum tier ( • ̀ω•́ )");
+        } else if (done == 7) {
+            showMessage("| Godlike! Workouts surrender to you,my lord. Current Tier: Diamond Σ( ° △ °|||)");
+        } else if (done == 8) {
+            showMessage("| Aced! The iron obeys your command. Current Tier: Master w(ﾟДﾟ)w");
+        } else if (done == 9) {
+            showMessage("| Unstoppable! You are the workout legend! Current Tier: Legendary (≖◡≖)");
+        } else if (done >= 10) {
+            showMessage("| Congrats! ٩(๑•̀ω•́๑)۶ You've reached the highest tier: Eternal");
+        }
         showLine();
         showMessage("| Daily quote:\"" + quote + "\"");
         showLine();
