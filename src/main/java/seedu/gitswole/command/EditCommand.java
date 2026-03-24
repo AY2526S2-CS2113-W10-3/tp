@@ -155,7 +155,6 @@ public class EditCommand extends Command{
         try {
             newExerciseReps = Integer.parseInt(ui.readLine());
         } catch (NumberFormatException e) {
-            ui.showMessage("No Change recorded!");
             return;
         }
         if (newExerciseReps <= 0) {
@@ -179,7 +178,6 @@ public class EditCommand extends Command{
         try {
             newExerciseSets = Integer.parseInt(ui.readLine());
         } catch (NumberFormatException e) {
-            ui.showMessage("No Change recorded!");
             return;
         }
         if (newExerciseSets <= 0) {
@@ -203,7 +201,6 @@ public class EditCommand extends Command{
         try {
             newExerciseWeight = Integer.parseInt(ui.readLine());
         } catch (NumberFormatException e) {
-            ui.showMessage("No Change recorded!");
             return;
         }
         if (newExerciseWeight <= 0) {
