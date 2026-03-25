@@ -17,3 +17,6 @@ bin/
 text-ui-test/EXPECTED-UNIX.TXT
 log.txt
 log.txt.*
+docs/history.txt
+docs/workouts.txt
+

@@ -61,6 +61,9 @@ Find Workout         | find w/WORKOUT                                           
 Find Exercise        | find e/EXERCISE w/WORKOUT                                    | find e/benchpress w/push      
 Mark Workout         | mark w/WORKOUT_NAME                                          | mark w/push                   
 Unmark Workout       | unmark w/WORKOUT_NAME                                        | unmark w/push                 
+List Log (All)       | loglist                                                      | loglist                       
+List Log (Workout)   | loglist w/WORKOUT_NAME                                       | loglist w/push                
+List Log (Date)      | loglist d/DATE                                               | loglist d/24-03-2026          
 Help                 | help                                                         | help                          
 Exit                 | exit                                                         | exit                          
 ====================================================================================================

@@ -84,7 +84,10 @@ public class EditCommand extends Command{
 
         printCurrentWorkout(ui, workoutToEditString);
 
-        changeWorkoutName(ui, workoutToEdit);
+        ui.showMessage("Edit fields (e.g. wn/NewName): ");
+        String editLine = ui.readLine();
+
+        applyWorkoutEdits(editLine, workoutToEdit);
         printUpdatedWorkout(ui, workoutToEdit);
     }
 
@@ -132,125 +135,108 @@ public class EditCommand extends Command{
 
         printCurrentExercise(ui, workoutToEditString, exerciseToEdit);
 
-        changeWorkoutName(ui, workoutToEdit);
-        changeExerciseName(ui, exerciseToEdit);
-        changeWeight(ui, exerciseToEdit);
-        changeSets(ui, exerciseToEdit);
-        changeReps(ui,exerciseToEdit);
+        ui.showMessage("Edit fields (e.g. wn/NewWorkout en/NewExercise wt/100 s/3 r/10): ");
+        String editLine = ui.readLine();
+
+        applyExerciseEdits(editLine, workoutToEdit, exerciseToEdit);
 
         printUpdatedWorkout(ui, workoutToEdit);
     }
 
     /**
-     * Interactively prompts the user to update the reps of the given exercise.
-     * Non-positive or non-numeric input leaves the reps unchanged.
+     * Parses a single-line edit string and applies any specified changes to the
+     * given workout and exercise. Only fields whose flags are present in the input
+     * are updated; all others remain unchanged.
+     * <p>
+     * Supported flags:
+     * <ul>
+     *   <li>{@code wn/} — new workout name</li>
+     *   <li>{@code en/} — new exercise name</li>
+     *   <li>{@code wt/} — new weight (must be a positive integer)</li>
+     *   <li>{@code s/}  — new sets (must be a positive integer)</li>
+     *   <li>{@code r/}  — new reps (must be a positive integer)</li>
+     * </ul>
+     * Example input: {@code wn/LegDay en/Squat wt/120 s/4 r/8}
      *
-     * @param ui             The {@link Ui} instance used to display the prompt and read input.
-     * @param exerciseToEdit The {@link Exercise} whose reps may be updated.
+     * @param editLine       The raw input string containing one or more flag-value pairs.
+     *                       If {@code null} or blank, no changes are applied.
+     * @param workoutToEdit  The {@link Workout} whose name may be updated via {@code wn/}.
+     * @param exerciseToEdit The {@link Exercise} whose fields may be updated.
      */
-    private void changeReps(Ui ui, Exercise exerciseToEdit) {
-        ui.showLine();
-        ui.showMessage("Change REPS to: ");
-        int newExerciseReps;
+    private void applyExerciseEdits(String editLine, Workout workoutToEdit, Exercise exerciseToEdit) {
+        if (editLine == null || editLine.isBlank()) {
+            return;
+        }
+
+        String wn = Parser.parseValue(editLine, "wn/");
+        String en = Parser.parseValue(editLine, "en/");
+        String wt = Parser.parseValue(editLine, "wt/");
+        String s  = Parser.parseValue(editLine, "s/");
+        String r  = Parser.parseValue(editLine, "r/");
+
+        if (wn != null && !wn.isEmpty()) {
+            workoutToEdit.setWorkoutName(wn);
+            hasChanged = true;
+        }
+        if (en != null && !en.isEmpty()) {
+            exerciseToEdit.setExerciseName(en);
+            hasChanged = true;
+        }
+
         try {
-            newExerciseReps = Integer.parseInt(ui.readLine());
-        } catch (NumberFormatException e) {
-            ui.showMessage("No Change recorded!");
-            return;
+            int v = Integer.parseInt(wt);
+            if (v > 0) {
+                exerciseToEdit.setWeight(v);
+                hasChanged = true;
+            }
+        } catch (NumberFormatException ignored) {
+            LOGGER.log(Level.INFO, "Nothing was selected.");
         }
-        if (newExerciseReps <= 0) {
-            return;
-        }
-        exerciseToEdit.setReps(newExerciseReps);
-        this.hasChanged = true;
-    }
 
-    /**
-     * Interactively prompts the user to update the sets of the given exercise.
-     * Non-positive or non-numeric input leaves the sets unchanged.
-     *
-     * @param ui             The {@link Ui} instance used to display the prompt and read input.
-     * @param exerciseToEdit The {@link Exercise} whose sets may be updated.
-     */
-    private void changeSets(Ui ui, Exercise exerciseToEdit) {
-        ui.showLine();
-        ui.showMessage("Change SETS to: ");
-        int newExerciseSets;
         try {
-            newExerciseSets = Integer.parseInt(ui.readLine());
-        } catch (NumberFormatException e) {
-            ui.showMessage("No Change recorded!");
-            return;
+            int v = Integer.parseInt(s);
+            if (v > 0) {
+                exerciseToEdit.setSets(v);
+                hasChanged = true;
+            }
+        } catch (NumberFormatException ignored) {
+            LOGGER.log(Level.INFO, "Nothing was selected.");
         }
-        if (newExerciseSets <= 0) {
-            return;
-        }
-        exerciseToEdit.setSets(newExerciseSets);
-        this.hasChanged = true;
-    }
 
-    /**
-     * Interactively prompts the user to update the weight of the given exercise.
-     * Non-positive or non-numeric input leaves the weight unchanged.
-     *
-     * @param ui             The {@link Ui} instance used to display the prompt and read input.
-     * @param exerciseToEdit The {@link Exercise} whose weight may be updated.
-     */
-    private void changeWeight(Ui ui, Exercise exerciseToEdit) {
-        ui.showLine();
-        ui.showMessage("Change WEIGHT to: ");
-        int newExerciseWeight;
         try {
-            newExerciseWeight = Integer.parseInt(ui.readLine());
-        } catch (NumberFormatException e) {
-            ui.showMessage("No Change recorded!");
-            return;
+            int v = Integer.parseInt(r);
+            if (v > 0) {
+                exerciseToEdit.setReps(v);
+                hasChanged = true;
+            }
+        } catch (NumberFormatException ignored) {
+            LOGGER.log(Level.INFO, "Nothing was selected.");
         }
-        if (newExerciseWeight <= 0) {
-            return;
-        }
-        exerciseToEdit.setWeight(newExerciseWeight);
-        this.hasChanged = true;
     }
 
     /**
-     * Interactively prompts the user to update the name of the given exercise.
-     * Empty or blank input leaves the exercise name unchanged.
+     * Parses a single-line edit string and applies any specified changes to the
+     * given workout. Only fields whose flags are present in the input are updated.
+     * <p>
+     * Supported flags:
+     * <ul>
+     *   <li>{@code wn/} — new workout name</li>
+     * </ul>
+     * Example input: {@code wn/LegDay}
      *
-     * @param ui             The {@link Ui} instance used to display the prompt and read input.
-     * @param exerciseToEdit The {@link Exercise} whose name may be updated.
+     * @param editLine      The raw input string containing one or more flag-value pairs.
+     *                      If {@code null} or blank, no changes are applied.
+     * @param workoutToEdit The {@link Workout} whose name may be updated via {@code wn/}.
      */
-    private void changeExerciseName(Ui ui, Exercise exerciseToEdit) {
-        ui.showLine();
-        ui.showMessage("Change EXERCISE NAME to: ");
-        String newExerciseName = ui.readLine();
-        if (newExerciseName == null || newExerciseName.isEmpty()) {
+    private void applyWorkoutEdits(String editLine, Workout workoutToEdit) {
+        if (editLine == null || editLine.isBlank()) {
             return;
         }
-        assert exerciseToEdit != null : "exerciseToEdit cannot be null";
-
-        exerciseToEdit.setExerciseName(newExerciseName);
-        this.hasChanged = true;
-    }
-
-    /**
-     * Interactively prompts the user to update the name of the given workout.
-     * Empty or blank input leaves the workout name unchanged.
-     *
-     * @param ui           The {@link Ui} instance used to display the prompt and read input.
-     * @param workoutToEdit The {@link Workout} whose name may be updated.
-     */
-    private void changeWorkoutName(Ui ui, Workout workoutToEdit) {
-        ui.showLine();
-        ui.showMessage("Change WORKOUT NAME to: ");
-        String newWorkoutName = ui.readLine();
-        if (newWorkoutName == null || newWorkoutName.isEmpty()) {
-            return;
+        String wn = Parser.parseValue(editLine, "wn/");
+        if (wn != null && !wn.isEmpty()) {
+            workoutToEdit.setWorkoutName(wn);
+            hasChanged = true;
         }
-        assert workoutToEdit != null : "workoutToEdit cannot be null";
-
-        workoutToEdit.setWorkoutName(newWorkoutName);
-        this.hasChanged = true;
     }
 
     /**

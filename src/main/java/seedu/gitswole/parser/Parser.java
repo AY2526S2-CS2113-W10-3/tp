@@ -11,6 +11,7 @@ import seedu.gitswole.command.FindCommand;
 import seedu.gitswole.command.ListCommand;
 import seedu.gitswole.command.LogCommand;
 import seedu.gitswole.command.MarkCommand;
+import seedu.gitswole.command.LogListCommand;
 import seedu.gitswole.command.Command;
 
 import seedu.gitswole.exceptions.GitSwoleException;
@@ -30,7 +31,7 @@ public class Parser {
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
 
     enum CommandType {
-        ADD, DELETE, EXIT, HELP, LIST, FIND, MARK, EDIT, LOG
+        ADD, DELETE, EXIT, HELP, LIST, FIND, MARK, EDIT, LOG, LOGLIST
     }
 
     private static final Map<String, CommandType> COMMAND_MAP = new HashMap<>();
@@ -46,6 +47,7 @@ public class Parser {
         COMMAND_MAP.put("unmark", CommandType.MARK);
         COMMAND_MAP.put("edit", CommandType.EDIT);
         COMMAND_MAP.put("log", CommandType.LOG);
+        COMMAND_MAP.put("loglist", CommandType.LOGLIST);
     }
 
     private Ui ui;
@@ -112,6 +114,8 @@ public class Parser {
             return new LogCommand(response);
         case LIST:
             return new ListCommand(response);
+        case LOGLIST:
+            return new LogListCommand(response);
         case HELP:
             return new HelpCommand();
         case EXIT:

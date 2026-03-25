@@ -174,14 +174,34 @@ public class Ui {
     public void printExercises(ArrayList<Exercise> exercises) {
         if (exercises.isEmpty()) {
             showMessage("Your exercises list is currently empty :(");
-            showLine();
             return;
         }
         for (int i = 0; i < exercises.size(); i++) {
             Exercise e = exercises.get(i);
-            showMessage(String.format(" %d. %s (%dkg | %ds | %dr)", (i + 1), e.getExerciseName(), e.getWeight(),
-                e.getSets(), e.getReps()));
+            printIndividualExercise(e, i);
         }
+    }
+
+    private void printIndividualExercise(Exercise e, int i) {
+        StringBuilder details = new StringBuilder();
+        if (e.getWeight() != 0) {
+            details.append(e.getWeight() + "kg");
+        }
+        if (e.getSets() != 0) {
+            if (details.length() > 0) {
+                details.append(" | ");
+            }
+            details.append(e.getSets() + "s");
+        }
+        if (e.getReps() != 0) {
+            if (details.length() > 0) {
+                details.append(" | ");
+            }
+            details.append(e.getReps() + "r");
+        }
+
+        String detailsStr = details.length() > 0 ? " (" + details + ")" : "";
+        showMessage(String.format(" %d. %s%s", (i + 1), e.getExerciseName(), detailsStr));
     }
 
     /**

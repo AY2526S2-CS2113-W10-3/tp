@@ -44,7 +44,6 @@ class EditCommandTest {
         System.setIn(originalIn);
     }
 
-    /** Sets System.in BEFORE constructing EditCommand (Scanner binds in constructor). */
     private EditCommand editCommandWithInput(String response, String input) {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         ui = new Ui(in);
@@ -52,17 +51,16 @@ class EditCommandTest {
     }
 
     // edit workout tests
-
     @Test
-    @DisplayName("edit w/WORKOUT - renames workout when new name is provided")
+    @DisplayName("edit w/WORKOUT - renames workout when wn/ flag is provided")
     void editWorkout_validName_renamesWorkout() throws GitSwoleException {
         workouts.addWorkout(new Workout("LegDay"));
-        editCommandWithInput("edit w/LegDay", "ChestDay\n").execute(workouts, ui);
+        editCommandWithInput("edit w/LegDay", "wn/ChestDay\n").execute(workouts, ui);
         assertNotNull(workouts.getWorkoutByName("ChestDay"));
     }
 
     @Test
-    @DisplayName("edit w/WORKOUT - press enter cancels rename, workout name unchanged")
+    @DisplayName("edit w/WORKOUT - press enter leaves workout name unchanged")
     void editWorkout_pressEnter_noChange() throws GitSwoleException {
         workouts.addWorkout(new Workout("LegDay"));
         editCommandWithInput("edit w/LegDay", "\n").execute(workouts, ui);
@@ -95,7 +93,6 @@ class EditCommandTest {
     }
 
     // edit exercise tests
-
     @Test
     @DisplayName("edit w/ e/EXERCISE - throws INCOMPLETE_COMMAND when workout name is blank")
     void editExercise_blankWorkoutName_throwsIncompleteCommand() {
@@ -122,12 +119,12 @@ class EditCommandTest {
     }
 
     @Test
-    @DisplayName("edit w/WORKOUT e/EXERCISE - renames exercise when new name is provided")
+    @DisplayName("edit w/WORKOUT e/EXERCISE - renames exercise via en/ flag")
     void editExercise_validName_renamesExercise() throws GitSwoleException {
         Workout push = new Workout("push");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
         workouts.addWorkout(push);
-        editCommandWithInput("edit w/push e/bench press", "\npress\n\n\n\n").execute(workouts, ui);
+        editCommandWithInput("edit w/push e/bench press", "en/press\n").execute(workouts, ui);
         assertNotNull(workouts.getWorkoutByName("push").getExerciseByName("press"));
     }
 
@@ -137,68 +134,65 @@ class EditCommandTest {
         Workout push = new Workout("push");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
         workouts.addWorkout(push);
-        editCommandWithInput("edit w/push e/bench press", "\n\n\n\n\n").execute(workouts, ui);
+        editCommandWithInput("edit w/push e/bench press", "\n").execute(workouts, ui);
         Exercise e = workouts.getWorkoutByName("push").getExerciseByName("bench press");
         assertNotNull(e);
         assertEquals("bench press", e.getExerciseName());
+        assertTrue(outContent.toString().contains("No Changes recorded!"));
     }
 
     @Test
-    @DisplayName("edit w/WORKOUT e/EXERCISE - success message contains old and new exercise names")
+    @DisplayName("edit w/WORKOUT e/EXERCISE - success message contains new exercise name")
     void editExercise_successMessage_containsNames() throws GitSwoleException {
         Workout push = new Workout("push");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
         workouts.addWorkout(push);
-        editCommandWithInput("edit w/push e/bench press", "\npress\n\n\n\n").execute(workouts, ui);
-        String output = outContent.toString();
-        assertTrue(output.contains("press"));
+        editCommandWithInput("edit w/push e/bench press", "en/press\n").execute(workouts, ui);
+        assertTrue(outContent.toString().contains("press"));
     }
 
     @Test
-    @DisplayName("edit w/WORKOUT e/EXERCISE - correctly updates weight when new value is provided")
+    @DisplayName("edit w/WORKOUT e/EXERCISE - updates weight via wt/ flag")
     void editExercise_newWeight_updatesWeight() throws GitSwoleException {
         Workout push = new Workout("push");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
         workouts.addWorkout(push);
-        editCommandWithInput("edit w/push e/bench press", "\n\n80\n\n\n").execute(workouts, ui);
-        Exercise e = workouts.getWorkoutByName("push").getExerciseByName("bench press");
-        assertEquals(80, e.getWeight());
+        editCommandWithInput("edit w/push e/bench press", "wt/80\n").execute(workouts, ui);
+        assertEquals(80, workouts.getWorkoutByName("push").getExerciseByName("bench press").getWeight());
     }
 
     @Test
-    @DisplayName("edit w/WORKOUT e/EXERCISE - correctly updates sets when new value is provided")
+    @DisplayName("edit w/WORKOUT e/EXERCISE - updates sets via s/ flag")
     void editExercise_newSets_updatesSets() throws GitSwoleException {
         Workout push = new Workout("push");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
         workouts.addWorkout(push);
-        editCommandWithInput("edit w/push e/bench press", "\n\n\n5\n\n").execute(workouts, ui);
-        Exercise e = workouts.getWorkoutByName("push").getExerciseByName("bench press");
-        assertEquals(5, e.getSets());
+        editCommandWithInput("edit w/push e/bench press", "s/5\n").execute(workouts, ui);
+        assertEquals(5, workouts.getWorkoutByName("push").getExerciseByName("bench press").getSets());
     }
 
     @Test
-    @DisplayName("edit w/WORKOUT e/EXERCISE - correctly updates reps when new value is provided")
+    @DisplayName("edit w/WORKOUT e/EXERCISE - updates reps via r/ flag")
     void editExercise_newReps_updatesReps() throws GitSwoleException {
         Workout push = new Workout("push");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
         workouts.addWorkout(push);
-        editCommandWithInput("edit w/push e/bench press", "\n\n\n\n12\n").execute(workouts, ui);
-        Exercise e = workouts.getWorkoutByName("push").getExerciseByName("bench press");
-        assertEquals(12, e.getReps());
+        editCommandWithInput("edit w/push e/bench press", "r/12\n").execute(workouts, ui);
+        assertEquals(12, workouts.getWorkoutByName("push").getExerciseByName("bench press").getReps());
     }
 
     @Test
-    @DisplayName("edit w/WORKOUT e/EXERCISE - correctly updates all fields at once")
+    @DisplayName("edit w/WORKOUT e/EXERCISE - updates all fields in one line")
     void editExercise_allFields_updatesAll() throws GitSwoleException {
         Workout push = new Workout("push");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
         workouts.addWorkout(push);
-        editCommandWithInput("edit w/push e/bench press", "chest\nincline press\n80\n5\n12\n").execute(workouts, ui);
+        editCommandWithInput("edit w/push e/bench press",
+            "wn/chest en/incline press wt/80 s/5 r/12\n").execute(workouts, ui);
         Exercise e = workouts.getWorkoutByName("chest").getExerciseByName("incline press");
         assertNotNull(e);
         assertEquals(80, e.getWeight());
         assertEquals(5, e.getSets());
         assertEquals(12, e.getReps());
     }
-
 }

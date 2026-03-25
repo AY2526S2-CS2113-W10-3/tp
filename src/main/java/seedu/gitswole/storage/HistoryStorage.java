@@ -162,4 +162,78 @@ public class HistoryStorage {
         Files.createDirectories(path.getParent());
         Files.createFile(path);
     }
+
+    /**
+     * Returns all lines from the history file.
+     *
+     * @return A list of all lines in the history file, or empty if none exist.
+     * @throws IOException If an I/O error occurs.
+     */
+    public List<String> getAllEntries() throws IOException {
+        ensureFileExists();
+        List<String> lines = Files.readAllLines(Paths.get(HISTORY_FILE_PATH));
+        return lines.isEmpty() ? new ArrayList<>() : lines;
+    }
+
+    /**
+    * Returns all lines from the history file that belong to sessions matching the given workout name.
+    *
+    * @param workoutName The workout name to filter by.
+    * @return A list of lines belonging to matching sessions.
+    * @throws IOException If an I/O error occurs.
+    */
+    public List<String> getEntriesByWorkout(String workoutName) throws IOException {
+        ensureFileExists();
+        List<String> lines = Files.readAllLines(Paths.get(HISTORY_FILE_PATH));
+        List<String> result = new ArrayList<>();
+        String workoutTrigger = workoutName.toUpperCase() + " workout";
+
+        boolean inMatchingSession = false;
+        for (String line : lines) {
+            if (line.contains(workoutTrigger)) {
+                inMatchingSession = true;
+            } else if (line.startsWith("---")) {
+                if (inMatchingSession) {
+                    result.add(line);
+                }
+                inMatchingSession = false;
+            }
+
+            if (inMatchingSession) {
+                result.add(line);
+            }
+        }
+        return result;
+    }
+
+    /**
+    * Returns all lines from the history file that belong to sessions on the given date.
+    *
+    * @param date The date string to filter by (format: dd-MM-yyyy).
+    * @return A list of lines belonging to sessions on that date.
+    * @throws IOException If an I/O error occurs.
+    */
+    public List<String> getEntriesByDate(String date) throws IOException {
+        ensureFileExists();
+        List<String> lines = Files.readAllLines(Paths.get(HISTORY_FILE_PATH));
+        List<String> result = new ArrayList<>();
+        String dateTrigger = "[" + date;
+
+        boolean inMatchingSession = false;
+        for (String line : lines) {
+            if (line.startsWith(dateTrigger)) {
+                inMatchingSession = true;
+            } else if (line.startsWith("---")) {
+                if (inMatchingSession) {
+                    result.add(line);
+                }
+                inMatchingSession = false;
+            }
+
+            if (inMatchingSession) {
+                result.add(line);
+            }
+        }
+        return result;
+    }
 }
