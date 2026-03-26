@@ -1,33 +1,61 @@
-@startuml StorageLoadSequence
+@startuml
+title Sequence Diagram: Storage.load()
 
-participant "GitSwole" as GS
-participant "Storage" as S
-participant "File" as F
-participant "WorkoutList" as WL
+participant "Caller" as Caller
+participant ":Storage" as Storage
+participant ":WorkoutList" as WorkoutList
+participant ":Scanner" as Scanner
+participant ":Workout" as Workout
+participant ":Exercise" as Exercise
 
-GS -> S : load()
-S -> F : file.exists()?
+Caller -> Storage : load()
+activate Storage
 
-alt file not found
-    S --> GS : return new WorkoutList()
+Storage -> WorkoutList ** : new WorkoutList()
+
+Storage -> Storage : check file.exists()
+alt file does not exist
+    Storage --> Caller : empty workoutList
 else file exists
-    loop for each line in file
-        S -> F : readLine()
-        F --> S : line : String
+    Storage -> Scanner ** : new Scanner(file)
+    activate Scanner
 
-        alt tag == "WORKOUT"
-            S -> S : parseWorkoutLine(parts, lineNumber)
-            S -> WL : currentWorkout = new Workout(name)
-        else tag == "EXERCISE"
-            S -> S : parseExerciseLine(parts, lineNumber)
-            S -> WL : currentWorkout.addExercise(exercise)
-        else tag == "---"
-            S -> WL : addWorkout(currentWorkout)
-        else unrecognised tag
-            S -> S : throw StorageException(lineNumber)
+    loop scanner.hasNextLine()
+        Storage -> Scanner : nextLine()
+        Scanner --> Storage : line
+
+        alt WORKOUT_TAG
+            Storage -> Storage : parseWorkoutLine(parts)
+            activate Storage
+            Storage -> Workout ** : new Workout(name)
+            Storage --> Storage : currentWorkout
+            deactivate Storage
+
+        else EXERCISE_TAG
+            Storage -> Storage : parseExerciseLine(parts)
+            activate Storage
+            Storage -> Exercise ** : new Exercise(...)
+            Storage --> Storage : exercise
+            deactivate Storage
+
+            Storage -> Workout : addExercise(exercise)
+            activate Workout
+            Workout --> Storage
+            deactivate Workout
+
+        else WORKOUT_SEPARATOR
+            Storage -> WorkoutList : addWorkout(currentWorkout)
+            activate WorkoutList
+            WorkoutList --> Storage
+            deactivate WorkoutList
         end
     end
-    S --> GS : return WorkoutList
-end
 
+    Storage -> Scanner : close() <<via try-with-resources>>
+    deactivate Scanner
+    destroy Scanner
+
+    Storage --> Caller : workoutList
+end
+deactivate Storage
 @enduml
