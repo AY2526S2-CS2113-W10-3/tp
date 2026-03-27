@@ -1,39 +1,74 @@
-@startuml DeleteActivityDiagram
+@startuml
+title Sequence Diagram: DeleteCommand
 
-start
+participant "Caller" as Caller
+participant ":DeleteCommand" as Command
+participant ":WorkoutList" as WorkoutList
+participant ":Ui" as Ui
+participant ":Logger" as Logger
 
-:User enters delete command;
+Caller -> Command : execute(workouts, ui)
+activate Command
 
-if (arguments contains "e/"?) then (yes)
-    :Extract exerciseName and workoutName;
-    if (eIndex before wIndex AND both present?) then (yes)
-        :Call removeExercise(workoutName, exerciseName);
-        if (isDeleted?) then (yes)
-            :Show success message;
-        else (no)
-            :Show "not found" message;
-        endif
-    else (no)
-        :Show "invalid format" message;
-    endif
-else (no)
-    if (arguments contains "w/"?) then (yes)
-        :Extract workoutName;
-        if (workoutName is empty?) then (yes)
-            :Show "please specify name" message;
-        else (no)
-            :Call removeWorkout(workoutName);
-            if (isDeleted?) then (yes)
-                :Show success message;
-            else (no)
-                :Show "not found" message;
-            endif
-        endif
-    else (no)
-        :Show "invalid delete format" message;
-    endif
-endif
+alt arguments.contains("e/")
+    Command -> Command : deleteExercise(workouts, ui)
+    activate Command
 
-stop
+    alt invalid flag order (eIndex > wIndex) or missing flags
+        Command -> Logger : log(WARNING, "DeleteExercise failed...")
+        Command -> Ui : showMessage("Invalid format! Please use: delete e/EXERCISE w/WORKOUT")
+    else valid flags
+        Command -> Command : parse exerciseName & workoutName
+
+        alt empty exercise or workout name
+            Command -> Logger : log(WARNING, "DeleteExercise failed: Empty...")
+            Command -> Ui : showMessage("Exercise or Workout name cannot be empty...")
+        else valid names
+            Command -> WorkoutList : removeExercise(workoutName, exerciseName)
+            activate WorkoutList
+            WorkoutList --> Command : isDeleted (boolean)
+            deactivate WorkoutList
+
+            alt isDeleted == true
+                Command -> Ui : showMessage("Successfully deleted '...' from '...'!")
+            else isDeleted == false
+                Command -> Ui : showMessage("'...' or workout '...' not found...")
+            end
+        end
+    end
+    deactivate Command
+
+else arguments.contains("w/")
+    Command -> Command : deleteWorkout(workouts, ui)
+    activate Command
+
+    Command -> Command : parse workoutName
+
+    alt empty workout name
+        Command -> Logger : log(WARNING, "DeleteWorkout failed: Workout name is empty.")
+        Command -> Ui : showMessage("Please specify the workout name...")
+    else valid name
+        Command -> WorkoutList : removeWorkout(workoutName)
+        activate WorkoutList
+        WorkoutList --> Command : isDeleted (boolean)
+        deactivate WorkoutList
+
+        alt isDeleted == true
+            Command -> Ui : showMessage("Successfully deleted the ... session!")
+        else isDeleted == false
+            Command -> Ui : showMessage("'...' not found. Please check your spelling.")
+        end
+    end
+    deactivate Command
+
+else invalid format
+    Command -> Logger : log(WARNING, "Invalid delete format received: ...")
+    Command -> Ui : showMessage("Invalid delete format!")
+    Command -> Ui : showMessage("Use: delete w/WORKOUT  OR  delete e/EXERCISE w/WORKOUT")
+end
+
+Command --> Caller
+destroy Logger
+deactivate Command
 
 @enduml

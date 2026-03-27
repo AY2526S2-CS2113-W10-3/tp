@@ -1,27 +1,63 @@
-@startuml StorageSaveSequence
+@startuml
+title Sequence Diagram: Storage.save(WorkoutList)
 
-participant "GitSwole" as GS
-participant "Storage" as S
-participant "WorkoutList" as WL
-participant "Workout" as W
-participant "FileWriter" as FW
+participant "Caller" as Caller
+participant ":Storage" as Storage
+participant ":WorkoutList" as WorkoutList
+participant ":Workout" as Workout
+participant ":Exercise" as Exercise
+participant ":FileWriter" as FileWriter
 
-GS -> S : save(workoutList)
-S -> S : create parent dirs if needed
-S -> FW : new FileWriter(filePath)
+Caller -> Storage : save(workoutList)
+activate Storage
 
-loop for each workout in workoutList
-    S -> WL : getWorkouts()
-    WL --> S : ArrayList<Workout>
-    S -> FW : write("WORKOUT | name | isDone")
-    loop for each exercise in workout
-        S -> W : getExerciseList()
-        W --> S : ArrayList<Exercise>
-        S -> FW : write("EXERCISE | name | weight | sets | reps")
+Storage -> Storage : check/create parent directories
+Storage -> FileWriter ** : new FileWriter(file)
+activate FileWriter
+
+Storage -> WorkoutList : getWorkouts()
+activate WorkoutList
+WorkoutList --> Storage : List<Workout>
+deactivate WorkoutList
+
+loop for each workout in List<Workout>
+    Storage -> Storage : writeWorkout(writer, workout)
+    activate Storage
+
+    Storage -> Workout : getWorkoutName()
+    activate Workout
+    Workout --> Storage : name
+    deactivate Workout
+
+    Storage -> Workout : isDone()
+    activate Workout
+    Workout --> Storage : isDone
+    deactivate Workout
+
+    Storage -> FileWriter : write("WORKOUT | ...")
+
+    Storage -> Workout : getExerciseList()
+    activate Workout
+    Workout --> Storage : List<Exercise>
+    deactivate Workout
+
+    loop for each exercise in List<Exercise>
+        Storage -> Exercise : get properties\n(name, weight, sets, reps)
+        activate Exercise
+        Exercise --> Storage : properties
+        deactivate Exercise
+
+        Storage -> FileWriter : write("EXERCISE | ...")
     end
-    S -> FW : write("---")
+
+    Storage -> FileWriter : write("---")
+    deactivate Storage
 end
 
-S -> FW : close()
+Storage -> FileWriter : close() <<via try-with-resources>>
+deactivate FileWriter
+destroy FileWriter
 
+Storage --> Caller
+deactivate Storage
 @enduml
