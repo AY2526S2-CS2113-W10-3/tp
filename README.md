@@ -1,68 +1,284 @@
-# Gitswole
+# GitSwole User Guide
 
-# Duke project template
+GitSwole provides fast, CLI-based workout tracking for gym-goers who dislike slow GUI apps and manual logs. Single-command entry enables efficient logging of exercises, sets, and weights, with instant access to workout history and progress tracking optimized for keyboard-comfortable users.
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
+---
 
-## Setting up in Intellij
+## Table of Contents
 
-Prerequisites: JDK 17 (use the exact version), update Intellij to the most recent version.
+- [Quick Start](#quick-start)
+- [Features](#features)
+   - [Feature 1: Help](#feature-1-help)
+   - [Feature 2: Add Workout Session](#feature-2-add-workout-session)
+   - [Feature 3: Add an Exercise](#feature-3-add-an-exercise)
+   - [Feature 4: Delete Workout Session](#feature-4-delete-workout-session)
+   - [Feature 5: Delete an Exercise](#feature-5-delete-an-exercise)
+   - [Feature 6: List Workout Sessions](#feature-6-list-workout-sessions)
+   - [Feature 7: List Workout Exercises](#feature-7-list-workout-exercises)
+   - [Feature 8: Find a Workout](#feature-8-find-a-workout)
+   - [Feature 9: Find an Exercise](#feature-9-find-an-exercise)
+   - [Feature 10: Exit](#feature-10-exit)
+   - [Feature 11: Mark](#feature-11-mark)
+   - [Feature 12: Storage](#feature-12-storage)
+   - [Feature 13: Date](#feature-13-date)
+   - [Feature 14: Edit](#feature-14-edit)
+   - [Feature 15: Remarks](#feature-15-remarks)
+- [FAQ](#faq)
+- [Known Issues](#known-issues)
+- [Command Summary](#command-summary)
 
-1. **Ensure Intellij JDK 17 is defined as an SDK**, as described [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk) -- this step is not needed if you have used JDK 17 in a previous Intellij project.
-1. **Import the project _as a Gradle project_**, as described [here](https://se-education.org/guides/tutorials/intellijImportGradleProject.html).
-1. **Verify the setup**: After the importing is complete, locate the `src/main/java/seedu/duke/Duke.java` file, right-click it, and choose `Run Duke.main()`. If the setup is correct, you should see something like the below:
-   ```
-   > Task :compileJava
-   > Task :processResources NO-SOURCE
-   > Task :classes
-   
-   > Task :Duke.main()
-   Hello from
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   
-   What is your name?
-   ```
-   Type some word and press enter to let the execution proceed to the end.
+---
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+## Quick Start
 
-## Build automation using Gradle
+*(TBC)*
 
-* This project uses Gradle for build automation and dependency management. It includes a basic build script as well (i.e. the `build.gradle` file).
-* If you are new to Gradle, refer to the [Gradle Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/gradle.html).
+---
 
-## Testing
+## Features
 
-### I/O redirection tests
+### Feature 1: Help
 
-* To run _I/O redirection_ tests (aka _Text UI tests_), navigate to the `text-ui-test` and run the `runtest(.bat/.sh)` script.
+**Purpose:** Shows a message explaining the use of available commands.
 
-### JUnit tests
+**Format:**
+```
+help
+```
 
-* A skeleton JUnit test (`src/test/java/seedu/duke/DukeTest.java`) is provided with this project template. 
-* If you are new to JUnit, refer to the [JUnit Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/junit.html).
+**Example:**
+```
+Input:  help
+Output: Refer to the user guide: https://xxxxxxxxx.com
+```
 
-## Checkstyle
+---
 
-* A sample CheckStyle rule configuration is provided in this project.
-* If you are new to Checkstyle, refer to the [Checkstyle Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/checkstyle.html).
+### Feature 2: Add Workout Session
 
-## CI using GitHub Actions
+**Purpose:** Adds a workout to the list of workouts.
 
-The project uses [GitHub actions](https://github.com/features/actions) for CI. When you push a commit to this repo or PR against it, GitHub actions will run automatically to build and verify the code as updated by the commit/PR.
+**Format:**
+```
+add w/WORKOUT
+```
 
-## Documentation
+**Example:**
+```
+Input:  add w/push
+Output: Successfully added a Push Session! Remember to add your exercises :)
+```
 
-`/docs` folder contains a skeleton version of the project documentation.
+---
 
-Steps for publishing documentation to the public: 
-1. If you are using this project template for an individual project, go your fork on GitHub.<br>
-   If you are using this project template for a team project, go to the team fork on GitHub.
-1. Click on the `settings` tab.
-1. Scroll down to the `GitHub Pages` section.
-1. Set the `source` as `master branch /docs folder`.
-1. Optionally, use the `choose a theme` button to choose a theme for your documentation.
+### Feature 3: Add an Exercise
+
+**Purpose:** Adds an exercise to the list of exercises under a workout and initialises the weights, sets, and repetitions per set to default or specified values.
+
+**Format:**
+```
+add e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SET] [r/REPETITION]
+```
+
+**Example:**
+```
+Input:  add e/benchpress w/push
+        add e/benchpress w/push wt/40 s/3 r/8
+Output: Your exercise has been successfully added! Looking swole g
+```
+
+---
+
+### Feature 4: Delete Workout Session
+
+**Purpose:** Deletes a workout from the list of workouts.
+
+**Format:**
+```
+delete w/WORKOUT
+```
+
+**Example:**
+```
+Input:  delete w/push
+Output: Successfully deleted a Push Session!
+```
+
+---
+
+### Feature 5: Delete an Exercise
+
+**Purpose:** Deletes an exercise from the list of exercises under a workout.
+
+**Format:**
+```
+delete e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SET] [r/REPETITION]
+```
+
+**Example:**
+```
+Input:  delete e/benchpress w/push
+        delete e/benchpress w/push wt/40 s/3 r/8
+Output: Your exercise has been successfully deleted!
+```
+
+---
+
+### Feature 6: List Workout Sessions
+
+**Purpose:** Lists all the types of workout sessions.
+
+**Format:**
+```
+list /all
+```
+
+**Example:**
+```
+Input:  list /all
+Output:
+  Push: Benchpress
+  Push: Tricep Kickbacks
+  Pull: Lat pulldown
+  Pull: Preacher curls
+  Legs: What is legs?
+```
+
+---
+
+### Feature 7: List Workout Exercises
+
+**Purpose:** Lists exercises within a workout session.
+
+**Format:**
+```
+list w/WORKOUT
+```
+
+**Example:**
+```
+Input:  list w/push
+Output:
+  Bench Press | Weight: 80kg | Sets: 4 | Reps: 10
+  ... remaining exercises ...
+```
+
+---
+
+### Feature 8: Find a Workout
+
+**Purpose:** Helps you find the workout that you have logged.
+
+**Format:**
+```
+find w/WORKOUT
+```
+
+**Example:**
+```
+Input:  find w/push
+Output: Push | Exercise : 3
+
+Input:  find w/arms
+Output: Workout Not Found
+```
+
+---
+
+### Feature 9: Find an Exercise
+
+**Purpose:** Helps you find the exercise that you have logged.
+
+**Format:**
+```
+find e/EXERCISE w/WORKOUT
+```
+
+**Example:**
+```
+Input:  find e/benchpress w/push
+Output:
+  Bench Press | Weight: 80kg | Sets: 4 | Reps: 10
+```
+
+---
+
+### Feature 10: Exit
+
+**Purpose:** Exits the program.
+
+**Format:**
+```
+exit
+```
+
+---
+
+### Feature 11: Mark
+
+**Purpose:** Marks a workout as complete.
+
+*(Details TBC)*
+
+---
+
+### Feature 12: Storage
+
+**Purpose:** Keeps a record of past workout sessions (to use as templates).
+
+*(Details TBC)*
+
+---
+
+### Feature 13: Date
+
+**Purpose:** Assigns a date to each workout.
+
+*(Details TBC)*
+
+---
+
+### Feature 14: Edit
+
+**Purpose:** Edits values in a workout or exercise.
+
+*(Details TBC)*
+
+---
+
+### Feature 15: Remarks
+
+**Purpose:** Adds comments and remarks to a workout session.
+
+*(Details TBC)*
+
+---
+
+## FAQ
+
+*(TBC)*
+
+---
+
+## Known Issues
+
+*(TBC)*
+
+---
+
+## Command Summary
+
+| Action | Format | Example |
+|--------|--------|---------|
+| Add workout | `add w/WORKOUT` | `add w/push` |
+| Add exercise | `add e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SET] [r/REPETITION]` | `add e/benchpress w/push wt/40 s/3 r/8` |
+| Delete workout | `delete w/WORKOUT` | `delete w/push` |
+| Delete exercise | `delete e/EXERCISE w/WORKOUT` | `delete e/benchpress w/push` |
+| List all workouts | `list /all` | `list /all` |
+| List workout exercises | `list w/WORKOUT` | `list w/push` |
+| Find workout | `find w/WORKOUT` | `find w/push` |
+| Find exercise | `find e/EXERCISE w/WORKOUT` | `find e/benchpress w/push` |
+| Help | `help` | `help` |
+| Exit program | `exit` | `exit` |
+| Mark workout | *(TBC)* | |
+| Store workout | *(TBC)* | |
