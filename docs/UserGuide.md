@@ -226,7 +226,7 @@ exit
 
 **Purpose:** Keeps a record of past workout sessions (to use as templates).
 
-*(Details TBC)*
+
 
 ---
 
