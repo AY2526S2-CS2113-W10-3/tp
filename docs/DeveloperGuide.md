@@ -11,29 +11,30 @@ Workout Logging and Smart Overwriting Feature
 
 The **Architecture Diagram** below gives a high-level design overview of GitSwole.
 
-<img src="diagrams/ArchitectureDiagram.png" width="450" />
+<img src="team/architectureDiagram.png" width="450" />
 
 Given below is a quick overview of the main components and how they interact with each other.
 
 #### Main components of the architecture
 
 **`GitSwole`** (the class `GitSwole.java`) is in charge of app launch and shut down:
-- At app launch, it calls `setupLogger()`, instantiates `Ui` and `Storage`, loads persisted workout data into a `WorkoutList`, then enters the main command loop via `run()`.
-- At shut down (when `Command.isExit()` returns `true`), the loop exits cleanly and the application terminates.
+- **At app launch:** It calls `setupLogger()`, instantiates `Ui` and `Storage`, loads persisted workout data into a `WorkoutList`, then enters the main command loop via `run()`.
+- **At shut down:** When `Command.isExit()` returns `true`, the loop exits cleanly, and the application terminates.
 
 The bulk of the app's work is done by the following four components:
-- [**`UI`**](#ui-component): The UI of the App — reads user input and displays all output.
-- [**`Parser`**](#parser-component): The command interpreter — translates raw user input strings into executable `Command` objects.
-- [**`Command`**](#command-component): The command executor — each subclass encapsulates the logic for one specific operation.
-- [**`Storage`**](#storage-component): Reads data from, and writes data to, the hard disk.
+- [**`UI`**](#ui-component): The user interface — responsible for reading raw user input and displaying all formatted output back to the terminal.
+- [**`Parser`**](#parser-component): The command interpreter — handles complex string processing and flag extraction (e.g., `w/`, `e/`) to translate raw user input into executable `Command` objects.
+- [**`Command`**](#command-component): The command executor — each subclass encapsulates the specific business logic for one operation (e.g., `AddCommand`, `DeleteCommand`).
+- [**`Storage`**](#storage-component): The data persistence layer — manages file I/O operations for `workouts.txt` (templates) and `history.txt` (session logs).
 
 **`Assets`** represents the in-memory data model, consisting of `WorkoutList`, `Workout`, and `Exercise`. **`Commons`** contains shared utility classes (e.g., `GitSwoleException`) used across all components.
 
 #### How the architecture components interact with each other
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `add w/Push Day`.
+The *Sequence Diagram* below shows how the components interact with each other for the scenario 
+where the user issues the command `add w/Push Day`.
 
-<img src="diagrams/ArchitectureSequenceDiagram.png" width="574" />
+<img src="team/architectureSD.png" width="574" />
 
 Each of the four main components:
 - defines its API through a well-scoped class boundary.
@@ -41,94 +42,85 @@ Each of the four main components:
 
 ## Design & implementation
 
-{Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
+The design of GitSwole follows a modular architecture inspired by the N-tier pattern, specifically tailored for a 
+CLI-based CRUD application. The system is divided into four primary logic components: `UI`, `Parser`, `Command`, 
+and `Storage`. These components interact with a central `Assets` data model to perform operations. The application is 
+designed to be extensible, allowing new commands and storage formats to be added with minimal friction by extending the 
+base `Command` class and utilizing dedicated storage handlers.
 
-The logging mechanism allows users to record their workout sessions and track specific exercise statistics. 
-It is facilitated primarily by the LogCommand class, which interacts with the WorkoutList (in-memory state) 
-and HistoryStorage (persistent state).
+### Praveen's enhancement
 
-Implementation Details
-The LogCommand class extends Command and handles two primary states based on the presence of the e/ (exercise) 
-flag during parsing:
+This enhancement introduces a robust workout logging and history tracking system, along with a multi-tiered listing 
+mechanism. It is composed of the `ListCommand`, `LogCommand`, `LogListCommand`, `HistoryStorage` classes, and the 
+`history.txt` persistent file.
 
-Session Initialization (log w/WORKOUT_NAME):
+#### 1. Tiered Listing Feature (`ListCommand`)
+The listing enhancement allows users to view their data at three different granularities without needing multiple, 
+fragmented commands.
 
-The command parses the target workout name and verifies its existence in the WorkoutList.
+* **Implementation:**
+    `ListCommand` extends the base `Command` class. It uses string matching on the parsed user input to route execution 
+to one of three helper methods:
+    - `handleListSummary()`: Triggered by `list`. Iterates through `WorkoutList` to show names and completion status.
+    - `handleListWorkout()`: Triggered by `list w/`. Fetches a specific `Workout` and displays its nested `Exercise` list.
+    - `handleListAll()`: Triggered by `list all`. Performs a deep iteration across all workouts and their exercises.
 
-Sticky Session State: It updates the active workout name in WorkoutList via setActiveWorkoutName(). 
-This improves UX by allowing subsequent exercise logs to omit the w/ flag.
+* **Design Considerations:**
+    - **Why it is implemented this way:** Handling all list variations within a single `ListCommand` class centralizes 
+the read-only display logic. It prevents "class explosion" and adheres to the DRY principle by reusing UI rendering methods.
+    - **Alternatives considered:** Creating separate commands like `ListSummaryCommand` and `ListAllCommand`. This was 
+rejected as it would clutter the parser logic and make the codebase harder to maintain.
 
-Header Management: It checks HistoryStorage.hasSessionToday() before calling writeSessionHeader(). 
-This ensures that multiple logs for the same workout on the same day fall under a single header rather 
-than creating redundant entries.
+#### 2. Smart Workout Logging (`LogCommand`)
+The logging system allows users to record their real-time performance (weight, sets, reps) and persistent session data.
 
-Exercise Stat Logging (log e/EXERCISE_NAME ...):
+* **Implementation:**
+    - `LogCommand` manages active sessions. It supports a "sticky" session state where the application remembers the last workout logged (via `setActiveWorkoutName`), allowing users to log multiple exercises without re-typing the workout name.
 
-If the w/ flag is missing, the command falls back to the "sticky" active session stored in WorkoutList.
+* **Design Considerations:**
+    - **Why it is implemented this way:** The "sticky session" was implemented to improve User Experience (UX) in a CLI environment, reducing the number of keystrokes required during a workout.
+    - **Alternatives considered:** Requiring the `w/` flag for every single exercise log. This was deemed too tedious for users who are actively training.
 
-It updates the in-memory Exercise object with the optionally provided weight, sets, and reps.
+#### 3. Persistent History Storage (`HistoryStorage` & `history.txt`)
+Unlike the primary `workouts.txt` which stores the current "template" or "routine", `history.txt` stores an 
+immutable (but updatable for corrections) log of every completed session.
 
-Smart Overwriting: It calls HistoryStorage.updateExerciseLog(). Instead of blindly appending a new line 
-to the end of the text file, this method isolates the current day's session block and updates the 
-specific exercise entry, keeping the storage file concise and clean.
+* **Implementation:**
+    `HistoryStorage` implements a "Smart Overwriting" mechanism. When a user logs an exercise:
+    1. It identifies the session block for the current date.
+    2. It searches for the specific exercise entry within that block.
+    3. If found, it updates the stats and remarks in-place instead of appending a new line.
+    4. If not found, it appends the new entry to the end of the today's session block.
 
-Sequence Diagram Placeholder:
-The sequence diagram below illustrates the interactions between LogCommand, WorkoutList, and 
-HistoryStorage when a user executes log e/Bench Press wt/80.
+* **History File Format (`history.txt`):**
+    The file uses a human-readable format with date headers and dashed separators:
+    ```
+    [29-03-2026, 14:30] PUSH DAY workout
+    Bench Press       :   80kg |  3 sets | 10 reps
+      Remark: Felt heavy today
+    --------------------------------------------
+    ```
 
-``
-<img src="diagrams/LogCommandSequenceDiagram.png" width="600" />
+* **Design Considerations:**
+    - **Why it is implemented this way:** Smart overwriting was chosen to maintain data integrity and file cleanliness. 
+If a user makes a typo and re-logs the same exercise, the previous entry is corrected rather than duplicated.
+    - **Alternatives considered:** Append-only logging. While easier to implement, it leads to "data bloat" and 
+makes it difficult for users to correct mistakes.
 
-Design Considerations
-Dependency Injection for Storage: The LogCommand includes an overloaded constructor 
-that accepts a HistoryStorage instance.
+#### 4. Sequence Diagrams
 
-Why it is implemented this way: This allows the command to manage its own specific storage needs 
-without modifying the global execute(WorkoutList, Ui) signature used by all other commands. It also makes 
-LogCommand highly testable, as a mock storage class can be injected during unit testing.
+The following sequence diagram illustrates how the `ListCommand` determines the scope of the listing and interacts with the `WorkoutList` and `Ui` components:
 
-Alternatives Considered:
+<img src="team/listSD.png" width="600" />
 
-Alternative 1: Append-only logging. Every log command simply appends a new line to the history file.
+This sequence diagram shows the execution flow of the `LogCommand`, highlighting the "sticky session" logic and the interaction with `HistoryStorage`:
 
-Pros: Significantly easier to implement file I/O.
+<img src="team/logSD.png" width="600" />
 
-Cons: Fails to handle typos well. If a user logs 80kg instead of 90kg and re-enters the command, 
-both entries are saved, leading to corrupted data tracking and file bloat. 
-Smart overwriting was chosen to maintain data integrity.
+The following diagram details the internal "Smart Overwriting" mechanism within `HistoryStorage`:
 
-Tiered Listing Scope Feature
-The listing enhancement allows users to view their data at three different granularities 
-(summary, workout-specific, and global) without needing multiple, fragmented commands. 
-This is driven by the ListCommand class.
+<img src="team/historystorageSD.png" width="600" />
 
-Implementation Details
-ListCommand extends Command and uses string matching on the parsed user input to route the 
-execution flow to one of three helper methods:
-
-handleListSummary(): Triggered by the base list command. Iterates through the WorkoutList and 
-returns high-level workout names and their completion statuses.
-
-handleListWorkout(): Triggered when the w/ flag is present. Fetches a specific Workout object and 
-utilizes the Ui component to iterate through and print its inner ExerciseList.
-
-handleListAll(): Triggered by list all. Iterates through every Workout in the WorkoutList and 
-subsequently every Exercise within them, passing the full data structure to the Ui for rendering.
-
-Sequence Diagram Placeholder:
-The sequence diagram below shows the execution path and object retrieval when the 
-user issues a list w/Push Day command.
-
-``
-<img src="diagrams/ListCommandSequenceDiagram.png" width="600" />
-
-Design Considerations
-Single Command Class Routing:
-
-Why it is implemented this way: Handling all list variations within a single 
-ListCommand class centralizes the read-only display logic. The alternative would be 
-creating a class explosion (e.g., ListAllCommand, ListWorkoutCommand), which violates the 
-DRY principle since all three operations rely on the same UI rendering methods and underlying WorkoutList structures.
 
 ## Product scope
 ### Target user profile

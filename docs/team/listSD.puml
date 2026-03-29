@@ -1,0 +1,77 @@
+@startuml
+title Sequence Diagram: ListCommand
+
+participant "Caller" as Caller
+participant ":ListCommand" as Command
+participant ":WorkoutList" as WorkoutList
+participant ":Ui" as Ui
+participant "Parser" as Parser
+
+Caller -> Command : execute(workouts, ui)
+activate Command
+
+alt arguments.contains("w/")
+    Command -> Command : handleListWorkout(workouts, ui)
+    activate Command
+    
+    Command -> Parser : parseValue(arguments, "w/")
+    activate Parser
+    Parser --> Command : workoutName
+    deactivate Parser
+
+    alt workoutName is null or empty
+        Command --> Caller : throw GitSwoleException
+    else valid workoutName
+        Command -> WorkoutList : getWorkoutByName(workoutName)
+        activate WorkoutList
+        WorkoutList --> Command : workout
+        deactivate WorkoutList
+
+        alt workout == null
+            Command --> Caller : throw GitSwoleException
+        else workout found
+            Command -> Ui : showMessage(status + workoutName)
+            Command -> Ui : printExercises(exerciseList)
+            Command -> Ui : showLine()
+        end
+    end
+    deactivate Command
+
+else arguments.endsWith("all")
+    Command -> Command : handleListAll(workouts, ui)
+    activate Command
+    Command -> WorkoutList : getWorkouts()
+    activate WorkoutList
+    WorkoutList --> Command : workoutList
+    deactivate WorkoutList
+    
+    alt workoutList.isEmpty()
+        Command -> Ui : showMessage("Your workout list is empty")
+    else
+        Command -> Ui : printWorkouts(workoutList)
+    end
+    deactivate Command
+
+else default (list summary)
+    Command -> Command : handleListSummary(workouts, ui)
+    activate Command
+    Command -> WorkoutList : getWorkouts()
+    activate WorkoutList
+    WorkoutList --> Command : workoutList
+    deactivate WorkoutList
+    
+    alt workoutList.isEmpty()
+        Command -> Ui : showMessage("Your workout list is empty")
+    else
+        loop for each workout
+            Command -> Ui : showMessage(index + status + name)
+        end
+    end
+    Command -> Ui : showLine()
+    deactivate Command
+end
+
+Command --> Caller
+deactivate Command
+
+@enduml

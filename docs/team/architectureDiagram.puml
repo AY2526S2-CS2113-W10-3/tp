@@ -1,0 +1,38 @@
+@startuml
+title Architecture Diagram: GitSwole
+
+rectangle "Main Entry" {
+    component [GitSwole] as Main
+}
+
+rectangle "Logic Components" {
+    component [Ui] as UI
+    component [Parser] as Parser
+    component [Command] as Command
+}
+
+rectangle "Storage Layer" {
+    component [Storage] as Storage
+    component [HistoryStorage] as HStorage
+}
+
+rectangle "Data Model (Assets)" {
+    component [WorkoutList] as WL
+    component [Workout] as W
+    component [Exercise] as E
+}
+
+Main --> UI
+Main --> Parser
+Main --> Storage
+Main --> WL
+
+Parser ..> Command : creates
+Command ..> WL : modifies
+Command ..> UI : displays
+WL *-- W
+W *-- E
+Storage ..> WL : loads/saves
+HStorage ..> E : logs
+
+@enduml

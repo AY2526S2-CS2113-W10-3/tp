@@ -1,0 +1,89 @@
+@startuml
+title Sequence Diagram: LogCommand
+
+participant "Caller" as Caller
+participant ":LogCommand" as Command
+participant ":WorkoutList" as WorkoutList
+participant ":Workout" as Workout
+participant ":Exercise" as Exercise
+participant ":HistoryStorage" as Storage
+participant ":Ui" as Ui
+participant "Parser" as Parser
+
+Caller -> Command : execute(workouts, ui)
+activate Command
+
+alt response.contains(" e/")
+    Command -> Command : handleLogExercise(workouts, ui)
+    activate Command
+    
+    Command -> Parser : parseValue(response, "e/")
+    Command -> Parser : parseValue(response, "w/")
+    Command -> Parser : parseValue(response, "remark/")
+    
+    alt w/ missing
+        Command -> WorkoutList : getActiveWorkoutName()
+        activate WorkoutList
+        WorkoutList --> Command : workoutName
+        deactivate WorkoutList
+    end
+
+    Command -> WorkoutList : getWorkoutByName(workoutName)
+    activate WorkoutList
+    WorkoutList --> Command : workout
+    deactivate WorkoutList
+
+    Command -> Workout : getExerciseByName(exerciseName)
+    activate Workout
+    Workout --> Command : exercise
+    deactivate Workout
+
+    Command -> Parser : parseOptionalInt(...)
+    Command -> Exercise : setWeight/Sets/Reps(...)
+
+    Command -> Storage : hasSessionToday(workoutName)
+    activate Storage
+    Storage --> Command : hasSession
+    deactivate Storage
+
+    alt !hasSession
+        Command -> Storage : writeSessionHeader(workoutName)
+    end
+
+    Command -> Storage : updateExerciseLog(workoutName, exercise, remark)
+    
+    Command -> Ui : showMessage("Stats updated...")
+    Command -> Ui : printExercises(...)
+    deactivate Command
+
+else log workout (log w/...)
+    Command -> Command : handleLogWorkout(workouts, ui)
+    activate Command
+    
+    Command -> Parser : parseValue(response, "w/")
+    Command -> WorkoutList : getWorkoutByName(workoutName)
+    activate WorkoutList
+    WorkoutList --> Command : workout
+    deactivate WorkoutList
+
+    Command -> Storage : hasSessionToday(workoutName)
+    activate Storage
+    Storage --> Command : hasSession
+    deactivate Storage
+
+    alt !hasSession
+        Command -> Storage : writeSessionHeader(workoutName)
+        Command -> Ui : showMessage("Session started...")
+    else
+        Command -> Ui : showMessage("Resuming session...")
+    end
+
+    Command -> WorkoutList : setActiveWorkoutName(workoutName)
+    Command -> Ui : printExercises(...)
+    deactivate Command
+end
+
+Command --> Caller
+deactivate Command
+
+@enduml

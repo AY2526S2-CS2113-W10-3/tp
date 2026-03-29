@@ -1,0 +1,53 @@
+@startuml
+title Sequence Diagram: HistoryStorage Smart Overwriting
+
+participant "Caller" as Caller
+participant ":HistoryStorage" as Storage
+participant "Files" as Files
+
+Caller -> Storage : updateExerciseLog(workoutName, exercise, remark)
+activate Storage
+
+Storage -> Storage : ensureFileExists()
+Storage -> Files : readAllLines(path)
+activate Files
+Files --> Storage : lines
+deactivate Files
+
+Storage -> Storage : findSessionStartIndex(lines, workoutName)
+activate Storage
+Storage --> Storage : startIndex
+deactivate Storage
+
+alt startIndex != -1
+    Storage -> Storage : findSessionEndIndex(lines, startIndex)
+    activate Storage
+    Storage --> Storage : endIndex
+    deactivate Storage
+
+    Storage -> Storage : applyExerciseUpdate(lines, start, end, exercise, remark)
+    activate Storage
+    
+    loop i from start + 1 to end - 1
+        alt line.startsWith(exerciseKey)
+            Storage -> Storage : updateExistingEntry(lines, i, formattedLine, remark)
+            Storage --> Storage : return
+        end
+    end
+    
+    alt exercise not found in block
+        Storage -> Storage : addNewEntry(lines, end, formattedLine, remark)
+    end
+    
+    deactivate Storage
+
+    Storage -> Files : write(path, lines)
+    activate Files
+    Files --> Storage
+    deactivate Files
+end
+
+Storage --> Caller
+deactivate Storage
+
+@enduml

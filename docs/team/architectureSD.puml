@@ -1,0 +1,51 @@
+@startuml
+title Architecture Sequence Diagram: add w/Push Day
+
+participant ":GitSwole" as Main
+participant ":Ui" as UI
+participant ":Parser" as Parser
+participant ":AddCommand" as Command
+participant ":WorkoutList" as WL
+
+Main -> UI : readCommand()
+activate UI
+UI --> Main : "add w/Push Day"
+deactivate UI
+
+Main -> Parser : readResponse("add w/Push Day", workouts)
+activate Parser
+
+create Command
+Parser -> Command : new AddCommand("add w/Push Day")
+activate Command
+Command --> Parser : c
+deactivate Command
+
+Parser --> Main : c
+deactivate Parser
+
+Main -> Command : execute(workouts, ui)
+activate Command
+
+Command -> Parser : parseValue("add w/Push Day", "w/")
+activate Parser
+Parser --> Command : "Push Day"
+deactivate Parser
+
+create WL
+Command -> WL : addWorkout(new Workout("Push Day"))
+activate WL
+WL --> Command
+deactivate WL
+
+Command -> UI : showMessage("Successfully added...")
+activate UI
+UI --> Command
+deactivate UI
+
+Command --> Main
+deactivate Command
+
+Main -> Main : saveWorkouts()
+
+@enduml
