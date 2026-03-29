@@ -219,7 +219,6 @@ class StorageTest {
         writeRawFile(
                 "WORKOUT | push | false\n" +
                         "EXERCISE | bench press | 80 | 3 | 10\n"
-                // no "---" at the end
         );
 
         WorkoutList loaded = storage.load();
