@@ -247,13 +247,24 @@ with `WorkoutList` (to locate the target) and `Ui` (to drive an interactive prom
 **Edit Workout**
 > Only the workout name is changed.
 
-<img src="diagrams/commands/edit/EditWorkout.png">
-
+```
+Input:  edit w/push
+Prompt: Edit fields (e.g. wn/NewName):
+Input:  wn/Push Day
+Output: Change Recorded! Edited Workout:
+        Push Day | Exercises: ...
+```
 **Edit Exercise**
 > The workout name, exercise name, weight, sets, and reps can all be modified.
 
-<img src="diagrams/commands/edit/EditExercise.png">
-
+```
+Input:  edit w/Push Day e/Bench Press
+Prompt: Edit fields (e.g. wn/NewWorkout en/NewExercise wt/100 s/3 r/10):
+Input:  wt/90 s/4 r/8
+Output: Change Recorded! Edited Workout:
+        Push Day
+        Bench Press | Weight: 90kg | Sets: 4 | Reps: 8
+```
 #### Implementation
 
 `EditCommand` extends `Command` and routes execution to one of two private handlers based
