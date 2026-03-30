@@ -1,3 +1,4 @@
+//@@author rpraveen7
 package seedu.gitswole.command;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -125,3 +126,4 @@ class LogCommandTest {
         assertEquals(GitSwoleException.ErrorType.NOT_FOUND, ex2.getType());
     }
 }
+//@@author
