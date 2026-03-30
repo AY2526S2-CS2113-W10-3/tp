@@ -159,7 +159,81 @@ CLI-based CRUD application. The system is divided into four primary logic compon
 and `Storage`. These components interact with a central `Assets` data model to perform operations. The application is 
 designed to be extensible, allowing new commands and storage formats to be added with minimal friction by extending the 
 base `Command` class and utilizing dedicated storage handlers.
+### Ethan's enhancement
+### Delete Feature
 
+The delete mechanism is facilitated by the `DeleteCommand.java` class. It extends from the abstract class `Command` and overrides the `execute()` method, which throws the exception `GitSwoleException`, to execute the deletion of workouts/exercises.
+
+**How it works:** It receives 2 types of commands: one that deletes the workout only, and one that deletes the workout and the exercise of that workout.
+
+- `delete w/WORKOUT` — removes the entire named workout session
+- `delete e/EXERCISE w/WORKOUT` — removes a specific exercise from that workout
+
+**Examples:**
+```
+delete e/bench press w/pushday
+delete w/pushday
+```
+
+#### Architecture & Component Level Design
+
+When the user types in a command like the one shown above, it goes through the following process:
+
+1. **Parser:** Reads the raw input (e.g. `delete e/bench press w/pushday`), extracts the command word `delete`, and returns a new `DeleteCommand(response)` with the full raw string passed as the argument. No index parsing occurs — the entire string is forwarded as-is.
+
+2. **DeleteCommand:** The main loop calls `DeleteCommand#execute()`, which inspects the raw string for the presence of `e/` and `w/` flags to determine which operation to perform.
+
+3. **WorkoutList:** The command delegates to either `WorkoutList#removeWorkout()` or `WorkoutList#removeExercise()`, both of which perform case-insensitive name matching to locate and remove the target entry.
+
+4. **Ui:** The result (success or not found) is reported back to the user via `Ui#showMessage()`.
+
+#### Sequence Diagram
+
+This diagram shows the sequence in which the delete command is entered.
+
+<img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" width="950" />
+#### Design Considerations
+
+**Alternative 1 (Considered): Delete by list index**
+
+The user specifies the target by its position number in the list (e.g. `delete 1`).
+
+- **Pros:** Much faster typing, as you do not need to type in the flags, and if you know the index of the workout that you want to delete.
+- **Cons:** The user must first list the workouts in the list, then find their workout index, which might take an even longer time. Therefore, we decided to stick with the current implementation of using flags in our command.
+
+---
+
+### Storage Feature
+
+The `Storage` class saves and loads the data from `WorkoutList` through a plaintext file on the hardware memory. When the application is started and run, the previous data is immediately loaded into the application.
+
+Each workout block consists of:
+
+1. A `WORKOUT` header line with the workout name and completion status
+2. Zero or more `EXERCISE` lines with name, weight, sets, and reps
+3. A `---` separator marking the end of the block
+
+
+#### Architecture and Component Level Design
+
+1. **GitSwole:** Calls `loadWorkouts()` on startup to populate the `WorkoutList` before the main loop begins. Calls `saveWorkouts()` after every command that mutates the workout data.
+
+2. **WorkoutList / Workout / Exercise:** The `Storage` class reads directly from these classes to get the output.
+
+3. **File system:** `Storage` uses a `FileWriter` to write and a `Scanner` library to read from the plain text file `workouts.txt`. Parent directories are created automatically if they do not exist.
+
+#### Sequence Diagrams
+
+**Save:**
+
+<img src="diagrams/architecture/Storage/StorageSave-Sequence_Diagram__Storage_save_WorkoutList_.png" width="950" />
+
+**Load:**
+
+<img src="diagrams/architecture/Storage/StorageLoad-Sequence_Diagram__Storage_load__.png" width="742" />
+
+ 
+---
 ### Praveen's enhancement
 
 This enhancement introduces a robust workout logging and history tracking system, along with a multi-tiered listing 

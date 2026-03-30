@@ -215,7 +215,6 @@ class StorageTest {
     @Test
     void load_missingFinalSeparator_lastWorkoutStillLoaded() throws IOException,
             Storage.StorageException {
-        // Write a valid file but omit the final "---"
         writeRawFile(
                 "WORKOUT | push | false\n" +
                         "EXERCISE | bench press | 80 | 3 | 10\n"
