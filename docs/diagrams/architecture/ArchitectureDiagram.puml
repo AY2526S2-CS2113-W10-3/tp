@@ -6,7 +6,7 @@ rectangle "GitSwole\n(Main)" as Main
 rectangle "UI" as UI
 rectangle "Parser" as Parser
 rectangle "Command" as Command
-rectangle "Storage\nStorage\nHistoryStorage" as Storage
+rectangle "Storage\nHistoryStorage" as Storage
 
 rectangle "Assets\nWorkoutList\nWorkout\nExercise" as Assets
 rectangle "Commons\nGitSwoleException" as Commons
@@ -16,7 +16,7 @@ Main --> Parser  : initializes
 Main --> Storage : initializes
 
 UI      ..> Commons : uses
-Parser  ..> Command : creates
+Parser  --> Command : creates
 Parser  ..> Commons : uses
 Command --> Assets  : operates on
 Command ..> Commons : uses
