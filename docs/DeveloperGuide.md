@@ -243,6 +243,8 @@ ListCommand class centralizes the read-only display logic. The alternative would
 creating a class explosion (e.g., ListAllCommand, ListWorkoutCommand), which violates the 
 DRY principle since all three operations rely on the same UI rendering methods and underlying WorkoutList structures.
 
+---
+
 ### Edit Workout Feature
 
 The edit feature allows users to rename an existing workout or modify the details of
