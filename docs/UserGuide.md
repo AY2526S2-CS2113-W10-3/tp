@@ -259,11 +259,48 @@ exit
 
 ### Feature 15: Edit
 
-**Purpose:** Edits values in a workout or exercise.
+**Purpose:** Edits the name of an existing workout session, or updates any combination of fields
+within a specific exercise — without needing to delete and re-add.
 
-*(Details TBC)*
+**Format:**
+```
+edit w/WORKOUT_NAME
+edit w/WORKOUT_NAME e/EXERCISE_NAME
+```
 
----
+After entering the command, you will be prompted to enter the fields you wish to change.
+Only the flags you provide will be updated; all others remain unchanged.
+
+**Flags for editing:**
+
+| Flag | Meaning |
+|------|---------|
+| `wn/` | New workout name |
+| `en/` | New exercise name |
+| `wt/` | New weight (positive integer) |
+| `s/`  | New number of sets (positive integer) |
+| `r/`  | New number of reps (positive integer) |
+
+**Example — Edit a workout name:**
+```
+Input:  edit w/push
+Prompt: Edit fields (e.g. wn/NewName):
+Input:  wn/Push Day
+Output: Change Recorded! Edited Workout:
+        Push Day | Exercises: ...
+```
+
+**Example — Edit an exercise:**
+```
+Input:  edit w/Push Day e/Bench Press
+Prompt: Edit fields (e.g. wn/NewWorkout en/NewExercise wt/100 s/3 r/10):
+Input:  wt/90 s/4 r/8
+Output: Change Recorded! Edited Workout:
+        Push Day
+        Bench Press | Weight: 90kg | Sets: 4 | Reps: 8
+```
+
+> **Note:** Pressing Enter without typing anything at the prompt will be regarded as no changes.
 
 ### Feature 16: Remarks
 
@@ -349,5 +386,7 @@ Output: Stats updated for Bench Press in Push Day!
 | Log exercise stats | `log e/EXERCISE [w/WORKOUT] [wt/WEIGHT] [s/SETS] [r/REPS] [remark/REMARK]` | `log e/bench press wt/80 s/3 r/10` |
 | Find workout | `find w/WORKOUT` | `find w/push` |
 | Find exercise | `find e/EXERCISE w/WORKOUT` | `find e/benchpress w/push` |
+| Edit workout name | `edit w/WORKOUT` | `edit w/push` |
+| Edit exercise | `edit w/WORKOUT e/EXERCISE` | `edit w/Push Day e/Bench Press` |
 | Help | `help` | `help` |
 | Exit program | `exit` | `exit` |
