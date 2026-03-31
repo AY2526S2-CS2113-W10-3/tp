@@ -471,6 +471,51 @@ The following sequence diagram shows how `edit w/Push Day e/Bench Press` is hand
     - Cons: Longer process and seasoned user would be more comfortable typing all changes in one line.
       (e.g: `wn/push en/bench wt/100 s/3 r/10`)
 
+---
+
+### Wan's Enhancement
+
+This enhancement introduces the search capability, which allows users to quickly locate workouts and exercises
+within the application. It is composed of the `FindCommand` class.
+
+####  Keyword-Based Find Feature (`FindCommand`)
+
+The find mechanism allows users to search their data to two levels of extent — across all workouts, or within
+a specific workout's exercise list.
+
+**Implementation:**
+  `FindCommand` extends the base `Command` class and overrides `execute()`. It uses flag detection on the raw input
+  string to route execution to one of two helper methods:
+    
+`handleFindWorkout()`: Triggered by `find w/WORKOUT`. Scans all entries in `WorkoutList` via
+      `WorkoutList#getWorkouts()` using case-insensitive keyword matching, then displays each match's name and
+      exercise count.
+      
+`handleFindExercise()`: Triggered by `find e/EXERCISE w/WORKOUT`. First calls
+      `WorkoutList#getWorkoutByName()` to pin down the target workout, then iterates its exercise list for matches,
+      displaying name, weight, sets, and reps per result.
+
+  In both cases, results are surfaced through `Ui#showMessage()`. If no matches are found, a "Not Found" message
+  is displayed.
+
+**Design Considerations:**
+    
+**Why it is implemented this way:** Centralising both search variants within a single `FindCommand` class
+      keeps the flag-routing logic cohesive and avoids complicating the command hierarchy. The two-level search
+      (workout vs. exercise) mirrors the natural hierarchy of the data model, making the feature easy to use.
+
+**Alternatives considered:** Creating separate `FindWorkoutCommand` and `FindExerciseCommand` classes. This
+      was rejected as it would complicate the parser and duplicate the shared flag-parsing and result-display logic.
+
+#### 2. Sequence Diagram
+
+The following sequence diagram illustrates how `FindCommand` determines the search scope and interacts with
+`WorkoutList` and `Ui`:
+
+<img src="diagrams/commands/find/FindCommand.png" width="700" />
+ 
+---
+
 ## Product scope
 ### Target user profile
 

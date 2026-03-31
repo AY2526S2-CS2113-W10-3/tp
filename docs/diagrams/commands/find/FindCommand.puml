@@ -1,0 +1,69 @@
+@startuml
+title Sequence Diagram: FindCommand
+
+participant Caller
+participant ":FindCommand" as FindCommand
+participant ":Parser" as Parser
+participant ":WorkoutList" as WorkoutList
+participant ":Ui" as Ui
+
+Caller -> FindCommand : execute(workouts, ui)
+
+alt [arguments.contains("e/")]
+    FindCommand -> FindCommand : handleFindExercise(workouts, ui)
+
+    FindCommand -> Parser : parseValue(arguments, "e/")
+    Parser --> FindCommand : exerciseKeyword
+
+    FindCommand -> Parser : parseValue(arguments, "w/")
+    Parser --> FindCommand : workoutName
+
+    alt [missing e/ or w/ value]
+        FindCommand -> FindCommand : throw GitSwoleException\n(INCOMPLETE_COMMAND,\n"find e/EXERCISE w/WORKOUT")
+    else [valid keywords]
+        FindCommand -> WorkoutList : getWorkoutByName(workoutName)
+        WorkoutList --> FindCommand : targetWorkout
+
+        alt [targetWorkout == null]
+            FindCommand -> FindCommand : throw GitSwoleException\n(IDX_OUTOFBOUNDS, workoutName)
+        else [workout found]
+            loop for each exercise in targetWorkout.getExerciseList()
+                alt [exercise name contains exerciseKeyword]
+                    FindCommand -> Ui : showMessage("name | Weight: Xkg | Sets: X | Reps: X")
+                end
+            end
+
+            alt [not found]
+                FindCommand -> Ui : showMessage("Exercise Not Found :(")
+            end
+
+            FindCommand -> Ui : showLine()
+        end
+    end
+
+else [no "e/" → handleFindWorkout]
+    FindCommand -> FindCommand : handleFindWorkout(workouts, ui)
+
+    FindCommand -> Parser : parseValue(arguments, "w/")
+    Parser --> FindCommand : keyword
+
+    alt [keyword is null or empty]
+        FindCommand -> FindCommand : throw GitSwoleException\n(INCOMPLETE_COMMAND, "find w/WORKOUT")
+    else [valid keyword]
+        loop for each workout in workouts.getWorkouts()
+            alt [workout name contains keyword]
+                FindCommand -> Ui : showMessage("workoutName | Exercises: X")
+            end
+        end
+
+        alt [not found]
+            FindCommand -> Ui : showLine()
+            FindCommand -> Ui : showMessage("Workout Not Found :(")
+        end
+
+        FindCommand -> Ui : showLine()
+    end
+end
+
+FindCommand --> Caller
+@enduml
