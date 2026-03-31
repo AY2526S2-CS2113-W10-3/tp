@@ -1,0 +1,48 @@
+@startuml
+title Sequence Diagram: ExitCommand
+
+actor User
+participant ":GitSwole" as GitSwole
+participant ":Parser" as Parser
+participant "c:ExitCommand" as ExitCommand
+participant ":Ui" as Ui
+
+User -> GitSwole : run()
+activate GitSwole
+
+GitSwole -> Ui : readCommand()
+activate Ui
+Ui --> GitSwole : "exit"
+deactivate Ui
+
+GitSwole -> Parser : readResponse("exit", workouts)
+activate Parser
+
+create ExitCommand
+Parser -> ExitCommand : new ExitCommand()
+activate ExitCommand
+ExitCommand --> Parser
+deactivate ExitCommand
+
+Parser --> GitSwole : c
+deactivate Parser
+
+GitSwole -> ExitCommand : execute(workouts, ui)
+activate ExitCommand
+
+ExitCommand -> Ui : byeGreeting()
+activate Ui
+Ui --> ExitCommand
+deactivate Ui
+
+ExitCommand --> GitSwole
+deactivate ExitCommand
+
+GitSwole -> ExitCommand : isExit()
+activate ExitCommand
+ExitCommand --> GitSwole : true
+deactivate ExitCommand
+
+deactivate GitSwole
+destroy GitSwole
+@enduml

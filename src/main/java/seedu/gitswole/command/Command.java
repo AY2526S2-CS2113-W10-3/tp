@@ -10,6 +10,7 @@ import java.util.logging.Logger;
  * Represents an abstract command that can be executed within the GitSwole application.
  * All concrete command types must extend this class and implement {@link #execute}.
  */
+// @@author vet3whale
 public abstract class Command {
     protected static final Logger LOGGER = Logger.getLogger(Command.class.getName());
     protected boolean isExit = false;
@@ -33,3 +34,4 @@ public abstract class Command {
         return isExit;
     }
 }
+// @@author

@@ -1,4 +1,6 @@
 @startuml
+title Sequence Diagram: EditCommand
+
 participant ":EditCommand" as EC
 participant ":Parser" as P
 participant ":WorkoutList" as WL

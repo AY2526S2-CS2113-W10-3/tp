@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 public class Parser {
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
 
+    // @@author vet3whale
     enum CommandType {
         ADD, DELETE, EXIT, HELP, LIST, FIND, MARK, EDIT, LOG, LOGLIST
     }
@@ -49,7 +50,6 @@ public class Parser {
         COMMAND_MAP.put("log", CommandType.LOG);
         COMMAND_MAP.put("loglist", CommandType.LOGLIST);
     }
-
     private Ui ui;
 
     /**
@@ -58,6 +58,7 @@ public class Parser {
     public Parser() {
         ui = new Ui();
     }
+    // @@author
 
     /**
      * Reads a full user input string and returns the corresponding {@link Command}.
@@ -126,6 +127,7 @@ public class Parser {
         }
     }
 
+    // @@author vet3whale
     /**
      * Determines the {@link CommandType} from the first word of the user's input.
      *
@@ -144,6 +146,7 @@ public class Parser {
         }
         return type;
     }
+    // @@author
 
     /**
      * Extracts the value associated with a flag in the user's input string.

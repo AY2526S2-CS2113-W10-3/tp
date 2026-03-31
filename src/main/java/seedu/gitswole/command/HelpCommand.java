@@ -78,7 +78,7 @@ public class HelpCommand extends Command {
 
         // Footer
         ui.showMessage("=".repeat(consoleWidth));
-        ui.showMessage("For the full user guide, visit: https://xxxxxxxxx.com");
+        ui.showMessage("For the full user guide, visit: https://ay2526s2-cs2113-w10-3.github.io/tp/UserGuide.html");
     }
 }
 //@@author

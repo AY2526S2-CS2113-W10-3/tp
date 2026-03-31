@@ -1,4 +1,41 @@
 # Developer Guide
+## Table of Contents
+1. [Setup Guide](#setup-guide)
+
+2. [Design](#design)
+    - [UI Component](#ui-component)
+    - [Parser Component](#parser-component)
+    - [Command Component](#command-component)
+    - [Storage Component](#storage-component)
+
+3. [Implementation](#implementation)
+    - [Ethan's Enhancement](#ethans-enhancement)
+        - [Delete Feature](#1-delete-feature)
+        - [Storage Feature](#2-storage-feature)
+    - [Praveen's Enhancement](#praveens-enhancement)
+        - [Tiered Listing Feature (`ListCommand`)](#1-tiered-listing-feature-listcommand)
+        - [Smart Workout Logging (`LogCommand`)](#2-smart-workout-logging-logcommand)
+        - [Persistent History Storage (`HistoryStorage`)](#3-persistent-history-storage-historystorage--historytxt)
+    - [ShuoJie's Enhancement](#shuojies-enhancement)
+        - [History Retrieval (`LogList`)](#1-history-retrieval-loglist)
+    - [Vetri's Enhancement](#vetris-enhancement)
+        - [Help Command (`HelpCommand`)](#1-help-command-helpcommand)
+        - [Exit Command (`ExitCommand`)](#2-exit-command-exitcommand)
+        - [Edit Workout and Exercise Feature (`EditCommand`)](#3-edit-workout-and-exercise-feature-editcommand)
+    - [Wan's Enhancement](#wans-enhancement)
+        - [Keyword-Based Find Feature (`FindCommand`)](#1-keyword-based-find-feature-findcommand)
+
+4. [Product Scope](#product-scope)
+    - [Target User Profile](#target-user-profile)
+    - [Value Proposition](#value-proposition)
+
+5. [User Stories](#user-stories)
+
+6. [Non-Functional Requirements](#non-functional-requirements)
+
+7. [Glossary](#glossary)
+
+8. [Instructions for Manual Testing](#instructions-for-manual-testing)
 
 ## Setup Guide
 ### Steps
@@ -6,7 +43,7 @@
    ```bash
    git clone https://github.com/AY2526S2-CS2113-W10-3/tp
    ```
-2. navigate into the project directory:
+2. Navigate into the project directory:
    ```bash
    cd tp
    ```
@@ -22,7 +59,7 @@ The **Architecture Diagram** below gives a high-level design overview of GitSwol
 
 Given below is a quick overview of the main components and how they interact with each other.
 
-#### Main components of the architecture
+### Main components of the architecture
 
 **`GitSwole`** (the class `GitSwole.java`) is in charge of app launch and shut down:
 - **At app launch:** It calls `setupLogger()`, instantiates `Ui` and `Storage`, loads persisted workout data into a `WorkoutList`, then enters the main command loop via `run()`.
@@ -36,12 +73,12 @@ The bulk of the app's work is done by the following four components:
 
 **`Assets`** represents the in-memory data model, consisting of `WorkoutList`, `Workout`, and `Exercise`. **`Commons`** contains shared utility classes (e.g., `GitSwoleException`) used across all components.
 
-#### How the architecture components interact with each other
+### How the architecture components interact with each other
 
 The *Sequence Diagram* below shows how the components interact with each other for the scenario 
 where the user issues the command `add w/Push Day`.
 
-<img src="diagrams/architecture/ArchitectureSequenceDiagram.png" width="982" />
+<img src="diagrams/architecture/ArchitectureSequenceDiagram.png" width="648" />
 
 Each of the four main components:
 - defines its API through a well-scoped class boundary.
@@ -178,7 +215,7 @@ delete e/bench press w/pushday
 delete w/pushday
 ```
 
-#### Architecture & Component Level Design
+#### Architecture and Component Level Design
 
 When the user types in a command like the one shown above, it goes through the following process:
 
@@ -190,12 +227,6 @@ When the user types in a command like the one shown above, it goes through the f
 
 4. **Ui:** The result (success or not found) is reported back to the user via `Ui#showMessage()`.
 
-#### Sequence Diagram
-
-This diagram shows the sequence in which the delete command is entered.
-
-<img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" width="950" />
-
 #### Design Considerations
 **Alternative 1 (Considered): Delete by list index**
 
@@ -204,9 +235,14 @@ The user specifies the target by its position number in the list (e.g. `delete 1
 - **Pros:** Much faster typing, as you do not need to type in the flags, and if you know the index of the workout that you want to delete.
 - **Cons:** The user must first list the workouts in the list, then find their workout index, which might take an even longer time. Therefore, we decided to stick with the current implementation of using flags in our command.
 
----
 
-#### Storage Feature
+#### Sequence Diagram
+
+This diagram shows the sequence in which the delete command is entered.
+
+<img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" width="950" />
+
+#### 2. Storage Feature
 
 The `Storage` class saves and loads the data from `WorkoutList` through a plaintext file on the hardware memory. When the application is started and run, the previous data is immediately loaded into the application.
 
@@ -296,7 +332,7 @@ If a user makes a typo and re-logs the same exercise, the previous entry is corr
     - **Alternatives considered:** Append-only logging. While easier to implement, it leads to "data bloat" and 
 makes it difficult for users to correct mistakes.
 
-#### 4. Sequence Diagrams
+#### Sequence Diagrams
 
 The following sequence diagram illustrates how the `ListCommand` determines the scope of the listing and interacts with the `WorkoutList` and `Ui` components:
 
@@ -312,9 +348,11 @@ The following diagram details the internal "Smart Overwriting" mechanism within 
 
 ---
 
-### ShuoJie's enhancement: History Retrieval (`LogList`)
+### ShuoJie's enhancement
 
 The `LogList` enhancement provides users with a dedicated way to view their past workout sessions chronologically. While the standard `list` command displays workout templates (routines), `loglist` retrieves actual performed data from the persistent history file.
+
+#### 1. History Retrieval (`LogList`)
 
 #### Implementation
 
@@ -328,12 +366,6 @@ The execution flow involves the following steps:
 3. **Validation:** The command checks if the returned list is empty. If no history exists (e.g., a new user), it directs the `Ui` to show a "No history found" message.
 4. **Iterative Display:** If data exists, the command iterates through the list of log strings and calls `Ui#showMessage()` for each entry to render them in the terminal.
 
-#### Sequence Diagram
-
-The diagram below shows how the components interact when a user requests to see their workout history.
-
-<img src="diagrams/commands/loglist/loglistSD.png" width="700" />
-
 #### Design Considerations
 
 **Aspect: Data Source for History**
@@ -344,6 +376,13 @@ The diagram below shows how the components interact when a user requests to see 
 * **Alternative 2: Keeping an in-memory `ArrayList` of history logs.**
     * **Pros:** Faster retrieval as no file reading is required during the command execution.
     * **Why Rejected:** As a user logs more workouts over months, keeping every historical entry in RAM is inefficient. Since `loglist` is not a high-frequency command (like `add` or `log`), the slight trade-off in speed for better memory management was preferred.
+
+
+#### Sequence Diagram
+
+The diagram below shows how the components interact when a user requests to see their workout history.
+
+<img src="diagrams/commands/loglist/loglistSD.png" width="700" />
 
 ---
 
@@ -368,6 +407,9 @@ terminal.
     - **Alternatives considered:** A series of individual `Ui#showMessage()` calls, one per command. This was rejected
       as it scatters the command reference data across multiple lines and makes maintenance error-prone.
 
+**Sequence Diagram:**  
+<img src="diagrams/commands/help/HelpCommand.png" width="600"/>
+
 #### 2. Exit Command (`ExitCommand`)
 
 The exit feature cleanly terminates the application loop and displays a goodbye message.
@@ -385,6 +427,9 @@ The exit feature cleanly terminates the application loop and displays a goodbye 
       This was rejected because using exceptions for control flow is considered bad practice, as exceptions should
       signal unexpected errors, not a normal user-initiated shutdown. Declaring `ExitCommand` as a subclass of
       `Command` keeps the exit path uniform with every other command, requiring no special-casing in the main loop.
+
+**Sequence Diagram:**  
+<img src="diagrams/commands/exit/ExitCommand.png" width="600"/>
 
 #### 3. Edit Workout and Exercise Feature (`EditCommand`)
 
@@ -439,7 +484,7 @@ Given below is an example usage scenario for `edit w/Push Day e/Bench Press` and
 to retrieve the `Workout` object, then `Workout#getExerciseByName()` to retrieve the
 `Exercise` object. A `GitSwoleException` is thrown if either is not found.
 
-**Step 4.** The current workout and exercise details are2 printed via `Ui#printExercise()`.
+**Step 4.** The current workout and exercise details are printed via `Ui#printExercise()`.
 `Ui#readLine()` is called to collect the user's edit input in the format
 `wn/NewWorkout en/NewExercise wt/100 s/3 r/10`. Fields not provided are left unchanged.
 
@@ -451,10 +496,6 @@ field that is modified.
 **Step 6.** `printUpdatedWorkout()` checks `hasChanged`. If `true`, it calls
 `Ui#printWorkout()` to show the updated workout. Otherwise, it notifies the user that
 no changes were recorded.
-
-The following sequence diagram shows how `edit w/Push Day e/Bench Press` is handled:
-
-<img src="diagrams/commands/edit/EditCommand.png" width="1047"/>
 
 #### Design Considerations
 
@@ -471,6 +512,11 @@ The following sequence diagram shows how `edit w/Push Day e/Bench Press` is hand
     - Cons: Longer process and seasoned user would be more comfortable typing all changes in one line.
       (e.g: `wn/push en/bench wt/100 s/3 r/10`)
 
+
+**Sequence Diagram:**
+
+<img src="diagrams/commands/edit/EditCommand.png" width="1047"/>
+
 ---
 
 ### Wan's Enhancement
@@ -478,25 +524,23 @@ The following sequence diagram shows how `edit w/Push Day e/Bench Press` is hand
 This enhancement introduces the search capability, which allows users to quickly locate workouts and exercises
 within the application. It is composed of the `FindCommand` class.
 
-####  Keyword-Based Find Feature (`FindCommand`)
+####  1. Keyword-Based Find Feature (`FindCommand`)
 
 The find mechanism allows users to search their data to two levels of extent — across all workouts, or within
 a specific workout's exercise list.
 
-**Implementation:**
-  `FindCommand` extends the base `Command` class and overrides `execute()`. It uses flag detection on the raw input
-  string to route execution to one of two helper methods:
-    
-`handleFindWorkout()`: Triggered by `find w/WORKOUT`. Scans all entries in `WorkoutList` via
-      `WorkoutList#getWorkouts()` using case-insensitive keyword matching, then displays each match's name and
-      exercise count.
-      
-`handleFindExercise()`: Triggered by `find e/EXERCISE w/WORKOUT`. First calls
-      `WorkoutList#getWorkoutByName()` to pin down the target workout, then iterates its exercise list for matches,
-      displaying name, weight, sets, and reps per result.
+**Implementation:**  
+* `FindCommand` extends the base `Command` class and overrides `execute()`. It uses flag detection on the raw input 
+    string to route execution to one of two helper methods:
 
-  In both cases, results are surfaced through `Ui#showMessage()`. If no matches are found, a "Not Found" message
-  is displayed.
+* `handleFindWorkout()`: Triggered by `find w/WORKOUT`. Scans all entries in `WorkoutList` via
+`WorkoutList#getWorkouts()` using case-insensitive keyword matching, then displays each match's name and
+exercise count.
+* `handleFindExercise()`: Triggered by `find e/EXERCISE w/WORKOUT`. First calls
+`WorkoutList#getWorkoutByName()` to pin down the target workout, then iterates its exercise list for matches,
+displaying name, weight, sets, and reps per result.
+*   In both cases, results are surfaced through `Ui#showMessage()`. If no matches are found, a "Not Found" message
+is displayed.
 
 **Design Considerations:**
     
@@ -507,42 +551,89 @@ a specific workout's exercise list.
 **Alternatives considered:** Creating separate `FindWorkoutCommand` and `FindExerciseCommand` classes. This
       was rejected as it would complicate the parser and duplicate the shared flag-parsing and result-display logic.
 
-#### 2. Sequence Diagram
+**Sequence Diagram:**
 
 The following sequence diagram illustrates how `FindCommand` determines the search scope and interacts with
 `WorkoutList` and `Ui`:
 
 <img src="diagrams/commands/find/FindCommand.png" width="700" />
- 
+
 ---
 
-## Product scope
-### Target user profile
+## Product Scope
 
-{Describe the target user profile}
+### Target User Profile
 
-### Value proposition
+* Prefers typing over using a mouse.
+* Is comfortable with command-line interfaces.
+* Needs a fast and intuitive way to manage their workout logging.
+* Can type fast and prefers keyboard shortcuts.
 
-{Describe the value proposition: what problem does it solve?}
+### Value Proposition
+
+GitSwole enables fitness-focused CLI users to manage, log, and track workouts entirely from the terminal — faster and with less friction than any GUI-based alternative.  
+
+---
 
 ## User Stories
 
-|Version| As a ... | I want to ... | So that I can ...|
-|--------|----------|---------------|------------------|
-|v1.0|new user|see usage instructions|refer to them when I forget how to use the application|
-|v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
+| Version | As a ...          | I want to ...                                                                             | So that I can ...                                                              |
+|---------|-------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| v1.0    | new user          | see all available commands and their usage syntax                                         | quickly learn how to use the application without referring to external docs    |
+| v1.0    | gym-goer          | add workouts and exercises with their weight, sets, and reps                              | build and keep track of my training routine                                    |
+| v2.0    | methodical user   | edit the name or details of an existing workout or exercise                               | correct mistakes or update my training plan without deleting and re-adding     |
+| v2.0    | committed fitspo  | view all my past logged workout sessions in a single command                              | identify trends or gaps in my routine and plan my next workout better          |
+| v2.0    | reflective gym-goer | log remarks for each exercise during a session                                          | remember how each session felt and track qualitative progress over time        |
+
+
+---
+
 
 ## Non-Functional Requirements
-Performance:
-Security:
-Maintainability:
-Portability:
-{Give non-functional requirements}
+
+* **Environment**: Should work on any mainstream OS (Windows, Linux, macOS) as long as Java 11 or above is installed.
+* **Performance**: The system should respond to user inputs within 100ms to ensure a seamless typing experience.
+* **Data Integrity**: Data should be saved automatically to a local text file after every mutating command (add, delete, mark)
+to prevent data loss during unexpected closures.
+*  **Usability**: A user with above-average typing speed for regular English text (i.e., not necessarily code) should be able 
+to accomplish tasks faster than using a mouse in a GUI.
+
+---
 
 ## Glossary
 
-* *glossary item* - Definition
+* **CLI** - Command Line Interface. A text-based user interface used to interact with the software.
+* **Index** — The 1-based numerical position of a task as currently displayed in the list.
 
-## Instructions for manual testing
+---
 
-{Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+## Instructions for Manual Testing
+
+### Storage
+
+1. Add a workout and exercise:
+   ```
+   add w/push
+   add e/bench press w/push wt/80 s/3 r/10
+   ```
+2. Enter `exit` to close GitSwole.
+3. Relaunch the application.
+4. Enter `list` or `list w/WORKOUT` — you should see the previously added workouts and exercises.
+
+### Delete
+
+1. Add a workout and exercise:
+   ```
+   add w/push
+   add e/bench press w/push wt/80 s/3 r/10
+   ```
+2. Confirm the workout and exercise exist:
+   ```
+   list w/push
+   ```
+3. Delete the exercise:
+   ```
+   delete e/bench press w/push
+   ```
+4. Expected output: `Successfully deleted 'bench press' from 'push'!`
+5. Confirm removal - `list w/push` should now return an empty exercise list.

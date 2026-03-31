@@ -1,0 +1,49 @@
+@startuml
+title Sequence Diagram: HelpCommand
+
+actor User
+participant ":GitSwole" as GitSwole
+participant ":Parser" as Parser
+participant "c:HelpCommand" as HelpCommand
+participant ":Ui" as Ui
+
+User -> GitSwole : run()
+activate GitSwole
+
+GitSwole -> Ui : readCommand()
+activate Ui
+Ui --> GitSwole : "help"
+deactivate Ui
+
+GitSwole -> Parser : readResponse("help", workouts)
+activate Parser
+
+create HelpCommand
+Parser -> HelpCommand : new HelpCommand()
+activate HelpCommand
+HelpCommand --> Parser
+deactivate HelpCommand
+
+Parser --> GitSwole : c
+deactivate Parser
+
+GitSwole -> HelpCommand : execute(workouts, ui)
+activate HelpCommand
+
+loop for each row in commands
+    HelpCommand -> Ui : showMessage(row)
+    activate Ui
+    Ui --> HelpCommand
+    deactivate Ui
+end
+
+HelpCommand --> GitSwole
+deactivate HelpCommand
+
+GitSwole -> HelpCommand : isExit()
+activate HelpCommand
+HelpCommand --> GitSwole : false
+deactivate HelpCommand
+
+deactivate GitSwole
+@enduml

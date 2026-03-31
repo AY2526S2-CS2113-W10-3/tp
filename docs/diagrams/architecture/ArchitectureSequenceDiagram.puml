@@ -22,13 +22,13 @@ deactivate UI
 Main -> Parser : readResponse(input, workoutList)
 activate Parser
 
-create participant ":AddCommand" as Cmd
+create participant "c:AddCommand" as Cmd
 Parser -> Cmd : <<create>>
 activate Cmd
 Parser <-- Cmd :
 deactivate Cmd
 
-Main <-- Parser : addCommand
+Main <-- Parser : c
 deactivate Parser
 
 Main -> Cmd : execute(workoutList, ui)
