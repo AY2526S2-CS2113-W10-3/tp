@@ -98,7 +98,7 @@ public class ListCommand extends Command {
         }
 
         String status = workout.isDone() ? "[X]" : "[ ]";
-        ui.showMessage(status + workout.getWorkoutName().toUpperCase() + " Workout Exercises:");
+        ui.showMessage(status + " " + workout.getWorkoutName().toUpperCase() + " Workout Exercises:");
         ui.printExercises(workout.getExerciseList());
         ui.showLine();
     }
