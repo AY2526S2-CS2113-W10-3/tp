@@ -319,7 +319,7 @@ The history file will contain an entry like:
 [01-04-2026, 18:30] LEGS workout
 ```
 
-To review sessions by date, use the `loglist d/DATE` command (see [Feature 20: Log List](#feature-20-log-list)):
+To review sessions by date, use the `loglist d/DATE` command (see [Feature 20: View History](#feature-20-view-history)):
 ```
 Input:  loglist d/01-04-2026
 Output:
@@ -472,6 +472,7 @@ hamstring curl:   :  110kg |  4 sets |  8 reps
 deadlift:         :  100kg |  4 sets | 10 reps
 leg press:        :  140kg |  3 sets | 10 reps
 leg extension:    :   60kg |  3 sets | 15 reps
+...
 ```
 
 **Example** - Filter by workout:  
