@@ -19,7 +19,7 @@ GitSwole provides fast, CLI-based workout tracking for gym-goers who dislike slo
     - [Feature 9: Find a Workout](#feature-9-find-a-workout)
     - [Feature 10: Find an Exercise](#feature-10-find-an-exercise)
     - [Feature 11: Exit](#feature-11-exit)
-    - [Feature 12: Mark](#feature-12-mark)
+    - [Feature 12: Mark](#feature-12-mark--unmark-workout)
     - [Feature 13: Storage](#feature-13-storage)
     - [Feature 14: Date](#feature-14-date)
     - [Feature 15: Edit](#feature-15-edit)
@@ -27,7 +27,7 @@ GitSwole provides fast, CLI-based workout tracking for gym-goers who dislike slo
     - [Feature 17: Log Workout Session](#feature-17-log-workout-session)
     - [Feature 18: Log Exercise Stats](#feature-18-log-exercise-stats)
     - [Feature 19: History Storage](#feature-19-history-storage)
-    - [Feature 20: Log List](#feature-20-log-list)
+    - [Feature 20: View History](#feature-20-view-history)
 - [FAQ](#faq)
 - [Known Issues](#known-issues)
 - [Command Summary](#command-summary)
@@ -257,7 +257,7 @@ exit
 
 ---
 
-### Feature 12: Mark
+### Feature 12: Mark / Unmark Workout
 
 **Purpose:** Marks or unmarks a workout session as completed.
 
@@ -444,10 +444,9 @@ Output: Stats updated for Bench Press in Push Day!
 
 ---
 
-### Feature 20: Log List
+### Feature 20: View History
 
-**Purpose:** Displays your complete chronological training diary from `history.txt`. Supports filtering by workout name 
-or date so you can quickly review past sessions without scrolling through everything.
+**Purpose:** Displays the training history. User can view all logs, or filter by a specific workout or date.
 
 **Format:**
 ```

@@ -61,11 +61,6 @@ public class MarkCommand extends Command {
             throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, parts[0]);
         }
 
-        if (workoutName == null || workoutName.isEmpty()) {
-            LOGGER.log(Level.WARNING, "Mark/Unmark command missing w/ flag or workout name.");
-            throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, parts[0]);
-        }
-
         Workout target = workouts.getWorkoutByName(workoutName);
         if (target == null) {
             LOGGER.log(Level.WARNING, "Workout ''{0}'' not found.", workoutName);

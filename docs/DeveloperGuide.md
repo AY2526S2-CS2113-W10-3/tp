@@ -347,8 +347,7 @@ The following diagram details the internal "Smart Overwriting" mechanism within 
 <img src="diagrams/architecture/Storage/historystorageSD.png" width="600" />
 
 ---
-
-### ShuoJie's enhancement
+### ShuoJie's enhancement: History Retrieval (`loglist`)
 
 The `LogList` enhancement provides users with a dedicated way to view their past workout sessions chronologically. While the standard `list` command displays workout templates (routines), `loglist` retrieves actual performed data from the persistent history file.
 
@@ -356,26 +355,33 @@ The `LogList` enhancement provides users with a dedicated way to view their past
 
 #### Implementation
 
-The `LogList` mechanism is centered around the `LogListCommand` class. It serves as the bridge between the `HistoryStorage` component and the `Ui` component.
+The `LogList` mechanism is centered around the `LogListCommand` class. It acts as the logic controller that bridges the `HistoryStorage` component and the `Ui` component.
 
-**How it works:**
-The execution flow involves the following steps:
+##### Implementation Details: LogList Filter Logic
+The `LogListCommand` utilizes a strategy-based approach to filter history. Depending on the flags detected in the user's raw input string, it routes the request to different specialized methods within `HistoryStorage`. This prevents the command class from becoming bloated with file-parsing logic.
 
-1. **Initialization:** When the user enters `loglist`, the `Parser` identifies the keyword and returns a `LogListCommand` object.
-2. **Data Fetching:** Upon calling `execute()`, the command requests all log data from `HistoryStorage#loadHistory()`.
-3. **Validation:** The command checks if the returned list is empty. If no history exists (e.g., a new user), it directs the `Ui` to show a "No history found" message.
-4. **Iterative Display:** If data exists, the command iterates through the list of log strings and calls `Ui#showMessage()` for each entry to render them in the terminal.
+*   **Level 1 (Architecture):** The `LogListCommand` acts as a high-level controller. It requests a `List<String>` of formatted entries from the `Storage` layer and passes that list directly to the `UI` layer for rendering. This maintains a strict separation of concerns.
+*   **Level 2 (Component):** Inside the `execute()` method, the command performs flag detection:
+    *   If the `d/` flag is detected: It extracts the date string and calls `historyStorage.getEntriesByDate(date)`.
+    *   If the `w/` flag is detected: It extracts the workout name and calls `historyStorage.getEntriesByWorkout(name)`.
+    *   Otherwise: It defaults to `historyStorage.getAllEntries()` to show the complete history.
+
+##### Design Decision: Dependency Injection for Testing
+A key design choice was the implementation of an overloaded constructor:
+`LogListCommand(String response, HistoryStorage historyStorage)`.
+
+This allows for **Dependency Injection**. In the production environment, the app uses the default constructor which initializes a real file-linked `HistoryStorage`. During testing, the JUnit suite injects a `HistoryStorageStub`. This ensures that unit tests are:
+1.  **Isolated:** Tests do not fail if the actual `history.txt` file is missing or corrupted.
+2.  **Deterministic:** The test always receives the exact same mock data, making it reliable across different developer machines.
 
 #### Design Considerations
 
-**Aspect: Data Source for History**
+**Aspect: Data Retrieval Strategy**
 
-* **Alternative 1 (Current Choice): Reading directly from `history.txt` via `HistoryStorage`.**
-    * **Pros:** Ensures that the user sees the most up-to-date data saved on the disk, even if the file was edited manually. It keeps the memory footprint low as history is only loaded when requested.
-    * **Cons:** Slightly slower than reading from an in-memory list because it requires File I/O.
-* **Alternative 2: Keeping an in-memory `ArrayList` of history logs.**
-    * **Pros:** Faster retrieval as no file reading is required during the command execution.
-    * **Why Rejected:** As a user logs more workouts over months, keeping every historical entry in RAM is inefficient. Since `loglist` is not a high-frequency command (like `add` or `log`), the slight trade-off in speed for better memory management was preferred.
+*   **Alternative 1 (Current Choice): On-demand File Reading.**
+    *   **Pros:** Minimal memory footprint. The application does not need to store years of history in RAM; it only reads the file when the user explicitly asks for it.
+    *   **Cons:** Incurs a small File I/O overhead each time the command is run.
+    *   **Reason for Choosing:** Since `loglist` is a diagnostic command rather than a high-frequency entry command (like `add`), the trade-off of a few milliseconds of disk access for significantly lower RAM usage is optimal for a CLI tool.
 
 
 #### Sequence Diagram
