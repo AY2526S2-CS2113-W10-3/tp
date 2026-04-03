@@ -132,7 +132,7 @@ class LogCommandTest {
         HistoryStorage resumeStub = new HistoryStorageStub() {
             @Override
             public boolean hasSessionToday(String workoutName) {
-                return true; // 模拟今天已有 session
+                return true;
             }
         };
 
