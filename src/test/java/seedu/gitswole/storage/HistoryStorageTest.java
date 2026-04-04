@@ -144,7 +144,8 @@ class HistoryStorageTest {
         
         List<String> lines = Files.readAllLines(testFile);
         // Expect: [Header1, Separator, Header2]
-        assertTrue(lines.contains("--------------------------------------------"), "Separator should be added between sessions");
+        assertTrue(lines.contains("--------------------------------------------"), 
+                "Separator should be added between sessions");
     }
 
 }
