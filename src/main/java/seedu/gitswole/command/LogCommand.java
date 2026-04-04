@@ -134,8 +134,15 @@ public class LogCommand extends Command {
             workoutName = workouts.getActiveWorkoutName();
         }
 
-        if (exerciseName == null || workoutName == null) {
-            LOGGER.log(Level.WARNING, "LogExercise failed: Missing e/ flag or workout context.");
+        if (workoutName == null) {
+            LOGGER.log(Level.WARNING, "LogExercise failed: Missing workout context.");
+            throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, 
+                "No active workout session found. Please specify the workout using w/WORKOUT_NAME " +
+                "(e.g., log e/" + exerciseName + " w/push)");
+        }
+
+        if (exerciseName == null) {
+            LOGGER.log(Level.WARNING, "LogExercise failed: Missing e/ flag.");
             String usage = "log e/EXERCISE [w/WORKOUT] wt/WEIGHT s/SETS r/REPS [remark/REMARK]";
             throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, usage);
         }

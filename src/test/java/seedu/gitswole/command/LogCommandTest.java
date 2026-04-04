@@ -16,6 +16,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Provides unit tests for the {@link LogCommand} class.
@@ -108,6 +109,7 @@ class LogCommandTest {
         GitSwoleException ex = assertThrows(GitSwoleException.class, () -> 
             logCmd.execute(workouts, ui));
         assertEquals(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, ex.getType());
+        assertTrue(ex.getMessage().contains("No active workout session found"));
     }
 
     @Test
@@ -189,6 +191,46 @@ class LogCommandTest {
         LogCommand cmd = new LogCommand("log w/push", ioStub);
         cmd.execute(workouts, ui);
         assertEquals("push", workouts.getActiveWorkoutName());
+    }
+
+    @Test
+    @DisplayName("log e/EXERCISE — negative inputs throw NEG_INPUT")
+    void execute_negativeInputs_throwsException() {
+        workouts.setActiveWorkoutName("push");
+
+        // Case 1: Negative weight
+        LogCommand negWt = new LogCommand("log e/benchpress wt/-10", historyStub);
+        assertThrows(GitSwoleException.class, () -> negWt.execute(workouts, ui));
+
+        // Case 2: Negative sets
+        LogCommand negSets = new LogCommand("log e/benchpress s/-3", historyStub);
+        assertThrows(GitSwoleException.class, () -> negSets.execute(workouts, ui));
+
+        // Case 3: Negative reps
+        LogCommand negReps = new LogCommand("log e/benchpress r/-5", historyStub);
+        assertThrows(GitSwoleException.class, () -> negReps.execute(workouts, ui));
+    }
+
+    @Test
+    @DisplayName("log e/EXERCISE — empty e/ flag throws INCOMPLETE_COMMAND")
+    void execute_emptyExerciseFlag_throwsIncompleteCommand() {
+        workouts.setActiveWorkoutName("push");
+        LogCommand cmd = new LogCommand("log e/ wt/80", historyStub);
+        GitSwoleException ex = assertThrows(GitSwoleException.class, () -> cmd.execute(workouts, ui));
+        assertEquals(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, ex.getType());
+    }
+
+    @Test
+    @DisplayName("log e/EXERCISE — extremely large numbers handled by parser")
+    void execute_largeNumbers_handledByParser() throws GitSwoleException {
+        workouts.setActiveWorkoutName("push");
+        // Parser.parseOptionalInt returns default if parsing fails (e.g. overflow)
+        LogCommand cmd = new LogCommand("log e/benchpress wt/999999999999999999", historyStub);
+        cmd.execute(workouts, ui);
+        
+        Exercise bench = workouts.getWorkoutByName("push").getExerciseByName("benchpress");
+        // Should keep old value (0) because 999... is not a valid Int
+        assertEquals(0, bench.getWeight());
     }
 
 }

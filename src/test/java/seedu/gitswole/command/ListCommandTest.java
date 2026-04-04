@@ -160,5 +160,14 @@ class ListCommandTest {
         cmd.execute(workouts, ui);
         assertFalse(cmd.isExit());
     }
+
+    @Test
+    @DisplayName("list w/WORKOUT — trims whitespace in workout name")
+    void listWorkout_trimsWhitespace() throws GitSwoleException {
+        populateWorkouts();
+        // Should find "push" even with extra spaces
+        new ListCommand("list w/  push  ").execute(workouts, ui);
+        assertTrue(outContent.toString().contains("bench press"));
+    }
 }
 //@@author

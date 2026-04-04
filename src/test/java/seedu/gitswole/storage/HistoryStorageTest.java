@@ -112,4 +112,39 @@ class HistoryStorageTest {
         assertEquals(2, todayEntries.size()); // Header + Exercise
         assertTrue(todayEntries.get(0).contains(today));
     }
+
+    @Test
+    void hasSessionToday_corruptedFile_handlesGracefully() throws IOException {
+        // Create a file with random content
+        Files.write(testFile, List.of("This is not a session", "---", "Another random line"));
+        // Should not crash, just return false
+        assertFalse(historyStorage.hasSessionToday("push"));
+    }
+
+    @Test
+    void updateExerciseLog_specialCharactersInRemark_removesCorrectly() throws IOException {
+        historyStorage.writeSessionHeader("push");
+        Exercise bench = new Exercise("bench", 80, 3, 10);
+        
+        // Remark containing "Remark:" keyword
+        String trickyRemark = "My Remark: is awesome";
+        historyStorage.updateExerciseLog("push", bench, trickyRemark);
+        
+        // Update to remove it
+        historyStorage.updateExerciseLog("push", bench, null);
+        
+        List<String> lines = Files.readAllLines(testFile);
+        assertFalse(lines.stream().anyMatch(l -> l.contains(trickyRemark)), "Tricky remark should be removed");
+    }
+
+    @Test
+    void writeSessionHeader_subsequentHeaders_addsSeparator() throws IOException {
+        historyStorage.writeSessionHeader("push");
+        historyStorage.writeSessionHeader("pull");
+        
+        List<String> lines = Files.readAllLines(testFile);
+        // Expect: [Header1, Separator, Header2]
+        assertTrue(lines.contains("--------------------------------------------"), "Separator should be added between sessions");
+    }
+
 }
