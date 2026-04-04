@@ -22,14 +22,10 @@ public class GitSwole {
     private static final Logger logger = Logger.getLogger(GitSwole.class.getName());
     private static final String STORAGE_FILE_PATH = "docs/workouts.txt";
 
-    private static Ui ui;
+    private static Ui ui = new Ui();
     private static WorkoutList workouts = new WorkoutList();
     private static Storage storage = new Storage(STORAGE_FILE_PATH);
 
-    public GitSwole() {
-        ui = new Ui();
-        workouts = loadWorkouts();
-    }
     /**
      * Attempts to load workouts from the storage file on startup.
      * If the file does not exist yet (first run), returns an empty WorkoutList silently.
@@ -37,7 +33,7 @@ public class GitSwole {
      *
      * @return A {@link WorkoutList} populated from disk, or a fresh empty one on failure.
      */
-    private WorkoutList loadWorkouts() {
+    private static WorkoutList loadWorkoutsStatic() {
         try {
             WorkoutList loaded = storage.load();
             logger.log(Level.INFO, "Loaded " + loaded.numOfWorkouts() + " workout from " + STORAGE_FILE_PATH);
@@ -80,7 +76,7 @@ public class GitSwole {
     private static void setupLogger() {
         try {
             Logger rootLogger = Logger.getLogger("");
-            for (var handler : rootLogger.getHandlers()) {
+            for (java.util.logging.Handler handler : rootLogger.getHandlers()) {
                 rootLogger.removeHandler(handler);
             }
 
@@ -125,7 +121,7 @@ public class GitSwole {
         setupLogger();
         logger.log(Level.INFO, "GitSwole application starting...");
 
-        new GitSwole();
+        workouts = loadWorkoutsStatic();
         run();
 
         logger.log(Level.INFO, "GitSwole application terminated.");

@@ -102,6 +102,12 @@ public class WorkoutList {
         return false;
     }
 
+    /**
+     * Finds and returns a workout from the list by its name, ignoring case.
+     *
+     * @param name The name of the workout to find.
+     * @return The {@link Workout} object if found, or {@code null} otherwise.
+     */
     public Workout getWorkoutByName(String name) {
         for (Workout w : workouts) {
             if (w.getWorkoutName().equalsIgnoreCase(name.trim())) {
@@ -111,6 +117,11 @@ public class WorkoutList {
         return null;
     }
 
+    /**
+     * Returns the number of workouts in the list that are marked as done.
+     *
+     * @return The count of completed workouts.
+     */
     public int numOfCompletedWorkouts() {
         int count = 0;
         for (Workout w : workouts) {
@@ -121,6 +132,11 @@ public class WorkoutList {
         return count;
     }
 
+    /**
+     * Returns the total number of exercises across all workouts in the list.
+     *
+     * @return The total exercise count.
+     */
     public int numOfTotalExercises() {
         int count = 0;
         for (Workout w : workouts) {

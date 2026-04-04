@@ -16,14 +16,14 @@ import java.util.Scanner;
  * including reading user input and displaying messages, workouts, and exercises.
  */
 public class Ui {
-    private Scanner in;
+    private Scanner scanner;
     private int dashes = 100; // minimally 100, for help print statements
 
     /**
      * Constructs an Ui instance and initializes the input scanner.
      */
     public Ui() {
-        in = new Scanner(System.in);
+        scanner = new Scanner(System.in);
     }
 
     /**
@@ -31,7 +31,7 @@ public class Ui {
      * USED FOR TESTING
      */
     public Ui(InputStream in) {
-        this.in = new Scanner(in);
+        this.scanner = new Scanner(in);
     }
 
     /**
@@ -40,7 +40,7 @@ public class Ui {
      * @return The full string entered by the user.
      */
     public String readLine() {
-        return in.hasNextLine() ? in.nextLine().trim() : "";
+        return scanner.hasNextLine() ? scanner.nextLine().trim() : "";
     }
 
     /**
@@ -49,7 +49,7 @@ public class Ui {
      * @return The full command string entered by the user.
      */
     public String readCommand() {
-        String response = in.nextLine();
+        String response = scanner.nextLine();
         return response;
     }
 

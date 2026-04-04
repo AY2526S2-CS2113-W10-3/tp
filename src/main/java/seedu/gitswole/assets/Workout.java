@@ -112,6 +112,12 @@ public class Workout {
         this.isDone = isDone;
     }
 
+    /**
+     * Finds and returns an exercise within this workout session by its name.
+     *
+     * @param exerciseToEditString The exact name of the exercise to find.
+     * @return The {@link Exercise} object if found, or {@code null} otherwise.
+     */
     public Exercise getExerciseByName(String exerciseToEditString) {
         for (Exercise e : exerciseList) {
             if (exerciseToEditString.equals(e.getExerciseName())) {
