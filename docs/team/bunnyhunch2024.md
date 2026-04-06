@@ -1,4 +1,4 @@
-# GitSwole Project Portfolio Page (Wan)
+# GitSwole Project Portfolio Page (bunnyhunch2024)
 
 ## Project: GitSwole
 
