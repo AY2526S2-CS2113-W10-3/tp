@@ -45,12 +45,19 @@ public class Ui {
 
     /**
      * Reads and returns a single line of input from the user.
+     * <p>
+     * Returns {@code null} when the underlying input stream has no more lines
+     * (i.e. EOF has been reached, such as when stdin is closed or a piped
+     * input stream ends). Callers must handle the {@code null} case to avoid
+     * {@link NullPointerException}.
      *
-     * @return The full command string entered by the user.
+     * @return The full command string entered by the user, or {@code null} at EOF.
      */
     public String readCommand() {
-        String response = scanner.nextLine();
-        return response;
+        if (!scanner.hasNextLine()) {
+            return null;
+        }
+        return scanner.nextLine();
     }
 
     /**
