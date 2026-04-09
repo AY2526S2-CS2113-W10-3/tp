@@ -174,18 +174,19 @@ public abstract void execute(WorkoutList workouts, Ui ui) throws GitSwoleExcepti
 Each concrete subclass encapsulates the full logic for exactly one user-facing operation.
 `Parser` resolves user input keywords to these subclasses as follows:
 
-| Keyword | Command Subclass | Responsibility |
-|---|---|---|
-| `add` | [`AddCommand`](#add-workout-and-exercise-feature-addcommand) | Adds a new `Workout` or `Exercise` to the `WorkoutList` |
-| `delete` | [`DeleteCommand`](#delete-feature-deletecommand) | Removes a `Workout` or `Exercise` by index |
-| `edit` | [`EditCommand`](#edit-workout-and-exercise-feature-editcommand) | Modifies the name or fields of an existing `Workout` or `Exercise` |
-| `find` | [`FindCommand`](#keyword-based-find-feature-findcommand) | Searches for workouts by keyword |
-| `list` | [`ListCommand`](#tiered-listing-feature-listcommand) | Lists workouts at summary, workout-specific, or full-detail scope |
-| `mark` / `unmark` | [`MarkCommand`](#mark-and-unmark-workout-feature-markcommand) | Marks or unmarks a `Workout` as done |
-| `log` | [`LogCommand`](#smart-workout-logging-logcommand) | Initialises a logging session or logs an individual exercise stat |
-| `loglist` | [`LogListCommand`](#history-retrieval-loglist) | Displays the full workout history from `HistoryStorage` |
-| `help` | [`HelpCommand`](#help-command-helpcommand) | Displays all available commands and their formats |
-| `exit` | [`ExitCommand`](#exit-command-exitcommand) | Sets `isExit = true` to signal the main loop to terminate |
+| Keyword           | Command Subclass                                                             | Responsibility                                                           |
+|-------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| `add`             | [`AddCommand`](#add-workout-and-exercise-feature-addcommand)                 | Adds a new `Workout` or `Exercise` to the `WorkoutList`                  |
+| `delete`          | [`DeleteCommand`](#delete-feature-deletecommand)                             | Removes a `Workout` or `Exercise` by index                               |
+| `edit`            | [`EditCommand`](#edit-workout-and-exercise-feature-editcommand)              | Modifies the name or fields of an existing `Workout` or `Exercise`       |
+| `find`            | [`FindCommand`](#keyword-based-find-feature-findcommand)                     | Searches for workouts by keyword                                         |
+| `list`            | [`ListCommand`](#tiered-listing-feature-listcommand)                         | Lists workouts at summary, workout-specific, or full-detail scope        |
+| `mark` / `unmark` | [`MarkCommand`](#mark-and-unmark-workout-feature-markcommand)                | Marks or unmarks a `Workout` as done                                     |
+| `log`             | [`LogCommand`](#smart-workout-logging-logcommand)                            | Initialises a logging session or logs an individual exercise stat        |
+| `loglist`         | [`LogListCommand`](#history-retrieval-loglist)                               | Displays the full workout history from `HistoryStorage`                  |
+| `help`            | [`HelpCommand`](#help-command-helpcommand)                                   | Displays all available commands and their formats                        |
+| `exit`            | [`ExitCommand`](#exit-command-exitcommand)                                   | Sets `isExit = true` to signal the main loop to terminate                |  
+
 The `isExit()` method is defined in the base class and returns `false` for all commands
 except `ExitCommand`, which overrides it to return `true`.
 
