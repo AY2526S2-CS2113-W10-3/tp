@@ -22,14 +22,20 @@ public class GitSwole {
     private static final Logger logger = Logger.getLogger(GitSwole.class.getName());
     private static final String STORAGE_FILE_PATH = "docs/workouts.txt";
 
-    private static Ui ui;
-    private static WorkoutList workouts = new WorkoutList();
-    private static Storage storage = new Storage(STORAGE_FILE_PATH);
+    private final Ui ui;
+    private final Storage storage;
+    private WorkoutList workouts;
 
+    /**
+     * Constructs a GitSwole instance and initializes core components.
+     * Loads existing workouts from storage if available.
+     */
     public GitSwole() {
-        ui = new Ui();
-        workouts = loadWorkouts();
+        this.ui = new Ui();
+        this.storage = new Storage(STORAGE_FILE_PATH);
+        this.workouts = loadWorkouts();
     }
+
     /**
      * Attempts to load workouts from the storage file on startup.
      * If the file does not exist yet (first run), returns an empty WorkoutList silently.
@@ -56,7 +62,7 @@ public class GitSwole {
      * Attempts to save workouts to the storage file.
      * Logs and shows an error to the user if saving fails.
      */
-    private static void saveWorkouts() {
+    private void saveWorkouts() {
         try {
             storage.save(workouts);
             logger.log(Level.INFO, "Workouts saved to " + STORAGE_FILE_PATH);
@@ -69,18 +75,11 @@ public class GitSwole {
 
     /**
      * Configures the application logger to write to {@code log.txt} instead of the terminal.
-     * <p>
-     * Removes all default console handlers from the root logger to suppress terminal output,
-     * then attaches a {@link java.util.logging.FileHandler} in append mode with a
-     * {@link java.util.logging.SimpleFormatter} for human-readable log entries.
-     * <p>
-     * If the log file cannot be created or opened, a warning is printed to
-     * {@code System.err} and the application continues without file logging.
      */
     private static void setupLogger() {
         try {
             Logger rootLogger = Logger.getLogger("");
-            for (var handler : rootLogger.getHandlers()) {
+            for (java.util.logging.Handler handler : rootLogger.getHandlers()) {
                 rootLogger.removeHandler(handler);
             }
 
@@ -98,7 +97,7 @@ public class GitSwole {
      * Starts the main application loop, reading and executing user commands
      * until an exit command is issued.
      */
-    public static void run() {
+    public void run() {
         Parser parser = new Parser();
         ui.helloGreeting(workouts);
         boolean isExit = false;
@@ -125,8 +124,7 @@ public class GitSwole {
         setupLogger();
         logger.log(Level.INFO, "GitSwole application starting...");
 
-        new GitSwole();
-        run();
+        new GitSwole().run();
 
         logger.log(Level.INFO, "GitSwole application terminated.");
     }
