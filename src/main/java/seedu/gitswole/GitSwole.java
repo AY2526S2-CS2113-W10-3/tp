@@ -33,7 +33,7 @@ public class GitSwole {
     public GitSwole() {
         this.ui = new Ui();
         this.storage = new Storage(STORAGE_FILE_PATH);
-        this.workouts = loadWorkouts();
+        this.workouts = loadWorkoutsStatic(this.storage, this.ui);
     }
 
     /**
@@ -43,7 +43,7 @@ public class GitSwole {
      *
      * @return A {@link WorkoutList} populated from disk, or a fresh empty one on failure.
      */
-    private static WorkoutList loadWorkoutsStatic() {
+    private static WorkoutList loadWorkoutsStatic(Storage storage, Ui ui) {
         try {
             WorkoutList loaded = storage.load();
             logger.log(Level.INFO, "Loaded " + loaded.numOfWorkouts() + " workout from " + STORAGE_FILE_PATH);
