@@ -43,12 +43,14 @@ public class ListCommand extends Command {
         assert workouts != null : "WorkoutList must be initialized before execution";
         assert ui != null : "Ui must be initialized before execution";
 
-        if (arguments.contains("w/")) {
-            handleListWorkout(workouts, ui);
-        } else if (arguments.endsWith("all")) {
-            handleListAll(workouts, ui);
-        } else {
+        if (arguments.equals("list")) {
             handleListSummary(workouts, ui);
+        } else if (arguments.equals("list all")) {
+            handleListAll(workouts, ui);
+        } else if (arguments.contains("w/")) {
+            handleListWorkout(workouts, ui);
+        } else {
+            throw new GitSwoleException(GitSwoleException.ErrorType.UNKNOWN_COMMAND, arguments);
         }
     }
 

@@ -162,6 +162,14 @@ class ListCommandTest {
     }
 
     @Test
+    @DisplayName("list with invalid arguments — throws UNKNOWN_COMMAND")
+    void list_invalidArguments_throwsUnknownCommand() {
+        GitSwoleException ex = assertThrows(GitSwoleException.class,
+            () -> new ListCommand("list aa").execute(workouts, ui));
+        assertEquals(GitSwoleException.ErrorType.UNKNOWN_COMMAND, ex.getType());
+    }
+
+    @Test
     @DisplayName("list w/WORKOUT — trims whitespace in workout name")
     void listWorkout_trimsWhitespace() throws GitSwoleException {
         populateWorkouts();
