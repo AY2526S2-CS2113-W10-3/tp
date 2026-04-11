@@ -95,7 +95,7 @@ The bulk of the app's work is done by the following four components:
 - [**`Command`**](#command-component): The command executor - each subclass encapsulates the specific business logic for one operation (e.g., `AddCommand`, `DeleteCommand`).
 - [**`Storage`**](#storage-component): The data persistence layer - manages file I/O operations for `workouts.txt` (templates) and `history.txt` (session logs).
 
-**`Assets`** represents the in-memory data model, consisting of `WorkoutList`, `Workout`, and `Exercise`. **`Commons`** contains shared utility classes (e.g., `GitSwoleException`) used across all components.
+**`Assets`** represents the in-memory data model, consisting of `WorkoutList`, `Workout`, and `Exercise`.
 
 ### How the architecture components interact with each other
 
