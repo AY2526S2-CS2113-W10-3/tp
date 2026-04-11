@@ -34,6 +34,11 @@ public class GitSwole {
         this.ui = new Ui();
         this.storage = new Storage(STORAGE_FILE_PATH);
         this.workouts = loadWorkoutsStatic(this.storage, this.ui);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.log(Level.INFO, "Shutdown hook triggered - saving workouts before exit.");
+            saveWorkouts();
+        }));
     }
 
     /**
