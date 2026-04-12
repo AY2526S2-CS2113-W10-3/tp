@@ -179,9 +179,22 @@ public class Parser {
             return null;
         }
 
-        // 2. Find the NEXT flag using regex (e.g. " e/", " wt/")
+        // 2. Find the next flag, but do not scan past remark/
         int end = input.length();
-        Matcher m = Pattern.compile(" [a-zA-Z]+/").matcher(input);
+
+        // Find where remark/ starts (if it exists)
+        int remarkIdx = input.indexOf(" remark/");
+        if (remarkIdx == -1) {
+            remarkIdx = input.startsWith("remark/") ? 0 : input.length();
+        }
+
+        // Limit search to before remark/
+        int searchEnd = Math.min(remarkIdx, input.length());
+
+        // Only search within the allowed region
+        Matcher m = Pattern.compile(" [a-zA-Z]+/")
+                .matcher(input.substring(0, searchEnd));
+
         if (m.find(start)) {
             end = m.start();
         }
@@ -232,5 +245,32 @@ public class Parser {
                     fieldLabel + " name cannot contain the '|' character (reserved for storage)."
             );
         }
+    }
+
+    /**
+     * Extracts the remark value from the input string.
+     * Unlike parseValue, this treats remark/ as a terminal flag,
+     * capturing everything after it to end-of-string.
+     *
+     * @param input The full command string entered by the user.
+     * @return The trimmed remark value, or null if the remark/ flag is absent.
+     */
+    public static String parseRemark(String input) {
+        if (input == null) {
+            return null;
+        }
+        String flag = "remark/";
+        int idx = input.indexOf(" " + flag);
+        int start = -1;
+        if (idx != -1) {
+            start = idx + 1 + flag.length();
+        } else if (input.startsWith(flag)) {
+            start = flag.length();
+        }
+        if (start == -1 || start >= input.length()) {
+            return null;
+        }
+        String value = input.substring(start).trim();
+        return value.isEmpty() ? null : value;
     }
 }
