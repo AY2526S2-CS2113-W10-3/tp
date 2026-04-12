@@ -34,7 +34,7 @@ public class HelpCommand extends Command {
      */
     public void printHelpMessage(Ui ui) {
         int consoleWidth = ui.getDashes();
-        String format = "%-20s | %-60s | %-30s";
+        String format = "%-21s | %-60s | %-30s";
 
         // Header
         ui.showMessage("=".repeat(consoleWidth));
@@ -61,8 +61,7 @@ public class HelpCommand extends Command {
             {"List ALL Exercises", "list all", "list all"},
             {"Log Session", "log w/WORKOUT", "log w/push"},
             {"Log Performance", "log e/EXERCISE w/WORKOUT wt/W s/S r/R", "log e/bench w/push wt/60 s/3 r/8"},
-            {"Find Workout", "find w/WORKOUT", "find w/push"},
-            {"Find Exercise", "find e/EXERCISE w/WORKOUT", "find e/benchpress w/push"},
+            {"Find Workout/Exercise", "find KEYWORD", "find push"},
             {"Mark Workout" , "mark w/WORKOUT_NAME", "mark w/push"},
             {"Unmark Workout", "unmark w/WORKOUT_NAME", "unmark w/push"},
             {"List Log (All)", "loglist", "loglist"},

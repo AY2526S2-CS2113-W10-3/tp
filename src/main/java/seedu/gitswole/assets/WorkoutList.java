@@ -50,6 +50,16 @@ public class WorkoutList {
     }
 
     /**
+     * Checks if a workout with the given name already exists in the list (case-insensitive).
+     *
+     * @param name The name of the workout to check.
+     * @return {@code true} if a workout with the same name exists, {@code false} otherwise.
+     */
+    public boolean containsWorkout(String name) {
+        return getWorkoutByName(name) != null;
+    }
+
+    /**
      * Returns the full list of workouts.
      *
      * @return An {@link ArrayList} of all {@link Workout} objects.

@@ -100,7 +100,7 @@ public class Parser {
                 logger.log(Level.WARNING, "Find command missing keyword.");
                 throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, command);
             }
-            return new FindCommand(response);
+            return new FindCommand(response.substring(command.length()).trim());
         case EDIT:
             if (words.length < 2) {
                 logger.log(Level.WARNING, "Edit command missing keyword.");

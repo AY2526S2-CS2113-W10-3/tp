@@ -120,17 +120,10 @@ class HelpCommandTest {
     }
 
     @Test
-    @DisplayName("Output contains find workout format")
-    void output_containsFindWorkoutFormat() throws GitSwoleException {
+    @DisplayName("Output contains find format")
+    void output_containsFindFormat() throws GitSwoleException {
         new HelpCommand().execute(workouts, ui);
-        assertTrue(outContent.toString().contains("find w/WORKOUT"));
-    }
-
-    @Test
-    @DisplayName("Output contains find exercise format")
-    void output_containsFindExerciseFormat() throws GitSwoleException {
-        new HelpCommand().execute(workouts, ui);
-        assertTrue(outContent.toString().contains("find e/EXERCISE w/WORKOUT"));
+        assertTrue(outContent.toString().contains("find KEYWORD"));
     }
 
     @Test
@@ -178,10 +171,10 @@ class HelpCommandTest {
     }
 
     @Test
-    @DisplayName("Output contains find workout example")
-    void output_containsFindWorkoutExample() throws GitSwoleException {
+    @DisplayName("Output contains find example")
+    void output_containsFindExample() throws GitSwoleException {
         new HelpCommand().execute(workouts, ui);
-        assertTrue(outContent.toString().contains("find w/push"));
+        assertTrue(outContent.toString().contains("find push"));
     }
 
     @Test

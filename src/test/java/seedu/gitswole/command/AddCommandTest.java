@@ -91,6 +91,15 @@ class AddCommandTest {
         assertEquals(0, w.getNumOfExercises());
     }
 
+    @Test
+    @DisplayName("add w/WORKOUT — throws exception for duplicate workout name")
+    void addWorkout_duplicateName_throwsException() throws GitSwoleException {
+        new AddCommand("add w/push").execute(workouts, ui);
+        // Same name but different case should also fail
+        assertThrows(GitSwoleException.class,
+            () -> new AddCommand("add w/PUSH").execute(workouts, ui));
+    }
+
     // add exercise
     @Test
     @DisplayName("add e/EXERCISE w/WORKOUT — adds exercise to the correct workout")

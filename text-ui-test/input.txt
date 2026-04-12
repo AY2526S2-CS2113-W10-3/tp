@@ -8,7 +8,7 @@ list
 unmark w/push
 list
 mark w/nonexistent
-find w/push
+find push
 delete e/benchpress w/push
 delete w/push
 help

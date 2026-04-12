@@ -217,13 +217,13 @@ Output:
 
 **Format:**
 ```
-find w/WORKOUT
+find KEYWORD
 ```
 
 **Example:**
 ```
-Input:  find w/push
-Output: Push | Exercises: 3
+Input:  find push
+Output: [Workout] push | Exercises: 2
 ```
 
 ---
@@ -234,14 +234,13 @@ Output: Push | Exercises: 3
 
 **Format:**
 ```
-find e/EXERCISE w/WORKOUT
+find KEYWORD
 ```
 
 **Example:**
 ```
-Input:  find e/benchpress w/push
-Output:
-  Bench Press | Weight: 80kg | Sets: 4 | Reps: 10
+Input:  find bench
+Output: [Exercise] bench press (in push) | Weight: 90kg | Sets: 3 | Reps: 8
 ```
 
 ---
@@ -522,29 +521,28 @@ A: GitSwole will display an error message. Type `help` to see the list of valid 
 
 ## Command Summary
 
-| Action | Format | Example |
-|--------|--------|---------|
-| Add workout | `add w/WORKOUT` | `add w/push` |
-| Add exercise | `add e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SET] [r/REPETITION]` | `add e/benchpress w/push wt/40 s/3 r/8` |
-| Delete workout | `delete w/WORKOUT` | `delete w/push` |
-| Delete exercise | `delete e/EXERCISE w/WORKOUT` | `delete e/benchpress w/push` |
-| List summary | `list` | `list` |
-| List specific workout | `list w/WORKOUT` | `list w/push` |
-| List all | `list all` | `list all` |
-| Mark workout | `mark w/WORKOUT` | `mark w/push` |
-| Unmark workout | `unmark w/WORKOUT` | `unmark w/push` |
-| Log workout session | `log w/WORKOUT` | `log w/push day` |
-| Log exercise stats | `log e/EXERCISE [w/WORKOUT] [wt/WEIGHT] [s/SETS] [r/REPS] [remark/REMARK]` | `log e/bench press wt/80 s/3 r/10` |
-| Add remark | `log e/EXERCISE [w/WORKOUT] remark/REMARK` | `log e/bench press w/push remark/Felt strong` |
-| View full log history | `loglist` | `loglist` |
-| View log by workout | `loglist w/WORKOUT` | `loglist w/legs` |
-| View log by date | `loglist d/DATE` | `loglist d/30-03-2026` |
-| Find workout | `find w/WORKOUT` | `find w/push` |
-| Find exercise | `find e/EXERCISE w/WORKOUT` | `find e/benchpress w/push` |
-| Edit workout name | `edit w/WORKOUT` | `edit w/push` |
-| Edit exercise | `edit w/WORKOUT e/EXERCISE` | `edit w/Push Day e/Bench Press` |
-| Help | `help` | `help` |
-| Exit program | `exit` | `exit` |
+| Action                | Format                                                                     | Example |
+|-----------------------|----------------------------------------------------------------------------|---------|
+| Add workout           | `add w/WORKOUT`                                                            | `add w/push` |
+| Add exercise          | `add e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SET] [r/REPETITION]`              | `add e/benchpress w/push wt/40 s/3 r/8` |
+| Delete workout        | `delete w/WORKOUT`                                                         | `delete w/push` |
+| Delete exercise       | `delete e/EXERCISE w/WORKOUT`                                              | `delete e/benchpress w/push` |
+| List summary          | `list`                                                                     | `list` |
+| List specific workout | `list w/WORKOUT`                                                           | `list w/push` |
+| List all              | `list all`                                                                 | `list all` |
+| Mark workout          | `mark w/WORKOUT`                                                           | `mark w/push` |
+| Unmark workout        | `unmark w/WORKOUT`                                                         | `unmark w/push` |
+| Log workout session   | `log w/WORKOUT`                                                            | `log w/push day` |
+| Log exercise stats    | `log e/EXERCISE [w/WORKOUT] [wt/WEIGHT] [s/SETS] [r/REPS] [remark/REMARK]` | `log e/bench press wt/80 s/3 r/10` |
+| Add remark            | `log e/EXERCISE [w/WORKOUT] remark/REMARK`                                 | `log e/bench press w/push remark/Felt strong` |
+| View full log history | `loglist`                                                                  | `loglist` |
+| View log by workout   | `loglist w/WORKOUT`                                                        | `loglist w/legs` |
+| View log by date      | `loglist d/DATE`                                                           | `loglist d/30-03-2026` |
+| Find workout/exercise | `find KEYWORD`                                                             | `find push` |
+| Edit workout name     | `edit w/WORKOUT`                                                           | `edit w/push` |
+| Edit exercise         | `edit w/WORKOUT e/EXERCISE`                                                | `edit w/Push Day e/Bench Press` |
+| Help                  | `help`                                                                     | `help` |
+| Exit program          | `exit`                                                                     | `exit` |
 
 ---
 

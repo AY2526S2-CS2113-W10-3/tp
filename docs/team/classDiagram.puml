@@ -43,10 +43,8 @@ package "seedu.gitswole.command" {
     }
 
     class FindCommand {
-        - arguments : String
+        - keyword : String
         + execute(workouts : WorkoutList, ui : Ui) : void
-        - handleFindWorkout(workouts : WorkoutList, ui : Ui) : void
-        - handleFindExercise(workouts : WorkoutList, ui : Ui) : void
     }
 
     class HelpCommand {

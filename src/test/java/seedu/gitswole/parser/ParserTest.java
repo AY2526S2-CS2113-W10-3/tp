@@ -110,9 +110,9 @@ class ParserTest {
     }
 
     @Test
-    @DisplayName("readResponse returns FindCommand for 'find w/push'")
+    @DisplayName("readResponse returns FindCommand for 'find push'")
     void readResponse_find() throws GitSwoleException {
-        assertInstanceOf(FindCommand.class, parser.readResponse("find w/push", workouts));
+        assertInstanceOf(FindCommand.class, parser.readResponse("find push", workouts));
     }
 
     @Test

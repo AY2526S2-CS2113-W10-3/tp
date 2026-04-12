@@ -1,115 +1,108 @@
 @startuml
-title Sequence Diagram: FindCommand
+actor ":User" as User
+participant ":FindCommand" as FC
+participant ":WorkoutList" as WL
+participant ":Ui" as UI
+participant ":Workout" as W
+participant ":Exercise" as E
 
-participant "Caller" as Caller
-participant ":FindCommand" as Command
-participant ":WorkoutList" as WorkoutList
-participant ":Workout" as Workout
-participant ":Exercise" as Exercise
-participant ":Ui" as Ui
-participant "Parser" as Parser
+User -> FC : execute(workouts, ui)
+activate FC
 
-Caller -> Command : execute(workouts, ui)
-activate Command
+FC -> FC : keyword.toLowerCase()
 
-alt arguments.contains("e/")
-    Command -> Command : handleFindExercise(workouts, ui)
-    activate Command
-
-    Command -> Parser : parseValue(arguments, "e/")
-    Parser --> Command : exerciseKeyword
-    Command -> Parser : parseValue(arguments, "w/")
-    Parser --> Command : workoutName
-
-    alt exerciseKeyword or workoutName missing
-        Command -> Command : throw GitSwoleException(INCOMPLETE_COMMAND)
-    end
-
-    Command -> WorkoutList : getWorkoutByName(workoutName)
-    activate WorkoutList
-    WorkoutList --> Command : targetWorkout
-    deactivate WorkoutList
-
-    alt targetWorkout == null
-        Command -> Command : throw GitSwoleException(IDX_OUTOFBOUNDS)
-    end
-
-    Command -> Workout : getExerciseList()
-    activate Workout
-    Workout --> Command : exercises
-    deactivate Workout
-
-    loop for each exercise in exercises
-        Command -> Exercise : getExerciseName()
-        activate Exercise
-        Exercise --> Command : exerciseName
-        deactivate Exercise
-
-        alt exercise name contains exerciseKeyword
-            Command -> Exercise : getWeight()
-            activate Exercise
-            Exercise --> Command : weight
-            deactivate Exercise
-            Command -> Exercise : getSets()
-            activate Exercise
-            Exercise --> Command : sets
-            deactivate Exercise
-            Command -> Exercise : getReps()
-            activate Exercise
-            Exercise --> Command : reps
-            deactivate Exercise
-            Command -> Ui : showMessage("name | Weight | Sets | Reps")
-        end
-    end
-
-    alt !found
-        Command -> Ui : showMessage("Exercise Not Found :(")
-    end
-
-    Command -> Ui : showLine()
-    deactivate Command
-
-else find workout (find w/...)
-    Command -> Command : handleFindWorkout(workouts, ui)
-    activate Command
-
-    Command -> Parser : parseValue(arguments, "w/")
-    Parser --> Command : keyword
-
-    alt keyword missing
-        Command -> Command : throw GitSwoleException(INCOMPLETE_COMMAND)
-    end
-
-    Command -> WorkoutList : getWorkouts()
-    activate WorkoutList
-    WorkoutList --> Command : workoutsList
-    deactivate WorkoutList
-
-    loop for each workout in workoutsList
-        Command -> Workout : getWorkoutName()
-        activate Workout
-        Workout --> Command : workoutName
-        deactivate Workout
-
-        alt workout name contains keyword
-            Command -> Workout : getExerciseList()
-            activate Workout
-            Workout --> Command : exerciseList
-            deactivate Workout
-            Command -> Ui : showMessage("name | Exercises: count")
-        end
-    end
-
-    alt !found
-        Command -> Ui : showLine()
-        Command -> Ui : showMessage("Workout Not Found :(")
-    end
-
-    Command -> Ui : showLine()
-    deactivate Command
+alt keyword is empty
+    FC -> User : throw GitSwoleException
 end
 
-Command --> Caller
-deactivate Command
+FC -> WL : getWorkouts()
+activate WL
+WL --> FC
+deactivate WL
+
+loop for each workout in workouts
+
+    FC -> W : getWorkoutName()
+    activate W
+    W --> FC
+    deactivate W
+
+    alt workout name contains keyword
+        FC -> W : getWorkoutName()
+        activate W
+        W --> FC
+        deactivate W
+
+        FC -> W : getExerciseList()
+        activate W
+        W --> FC
+        deactivate W
+
+        FC -> UI : showMessage("[Workout] ...")
+        activate UI
+        UI --> FC
+        deactivate UI
+    end
+
+    FC -> W : getExerciseList()
+    activate W
+    W --> FC
+    deactivate W
+
+    loop for each exercise in workout
+
+        FC -> E : getExerciseName()
+        activate E
+        E --> FC
+        deactivate E
+
+        alt exercise name contains keyword
+            FC -> E : getExerciseName()
+            activate E
+            E --> FC
+            deactivate E
+
+            FC -> W : getWorkoutName()
+            activate W
+            W --> FC
+            deactivate W
+
+            FC -> E : getWeight()
+            activate E
+            E --> FC
+            deactivate E
+
+            FC -> E : getSets()
+            activate E
+            E --> FC
+            deactivate E
+
+            FC -> E : getReps()
+            activate E
+            E --> FC
+            deactivate E
+
+            FC -> UI : showMessage("[Exercise] ...")
+            activate UI
+            UI --> FC
+            deactivate UI
+        end
+    end
+end
+
+alt no matches found
+    FC -> UI : showMessage("No matching workouts or exercises found :(")
+    activate UI
+    UI --> FC
+    deactivate UI
+end
+
+FC -> UI : showLine()
+activate UI
+UI --> FC
+deactivate UI
+
+FC --> User
+deactivate FC
 
 @enduml

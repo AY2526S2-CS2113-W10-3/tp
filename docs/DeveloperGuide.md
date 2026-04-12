@@ -39,9 +39,9 @@
 ## Setup Guide
 
 ### Prerequisites
-* **JDK 17** (use the exact version) — verify with `java -version`
-* **IntelliJ IDEA** (update to the most recent version)
-* **Gradle** — the project ships with the Gradle wrapper (`gradlew`), so a
+* **JDK 17** - verify with `java -version`
+* **IntelliJ IDEA**
+* **Gradle** - the project ships with the Gradle wrapper (`gradlew`), so a
   separate Gradle installation is not required
 
 ### Getting the Source Code
@@ -55,10 +55,10 @@ git clone https://github.com/AY2526S2-CS2113-W10-3/tp
 cd tp
 ```
 
-### Setting Up the IDE (IntelliJ IDEA — Recommended)
+### Setting Up the IDE
 1. Open IntelliJ IDEA and choose **Open**, then select the root `tp/` folder.
 2. If prompted, select **Import Gradle Project** and let IntelliJ resolve dependencies.
-3. Ensure **IntelliJ JDK 17 is defined as an SDK**, as described [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk) — this step is not needed if you have used JDK 17 in a previous IntelliJ project:
+3. Ensure **IntelliJ JDK 17 is defined as an SDK**, as described [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk) - this step is not needed if you have used JDK 17 in a previous IntelliJ project:
    `File → Project Structure → Project → SDK`
 4. Enable annotation processing:
    `Settings → Build, Execution, Deployment → Compiler → Annotation Processors → Enable`
@@ -174,18 +174,19 @@ public abstract void execute(WorkoutList workouts, Ui ui) throws GitSwoleExcepti
 Each concrete subclass encapsulates the full logic for exactly one user-facing operation.
 `Parser` resolves user input keywords to these subclasses as follows:
 
-| Keyword | Command Subclass | Responsibility |
-|---|---|---|
-| `add` | [`AddCommand`](#add-workout-and-exercise-feature-addcommand) | Adds a new `Workout` or `Exercise` to the `WorkoutList` |
-| `delete` | [`DeleteCommand`](#delete-feature-deletecommand) | Removes a `Workout` or `Exercise` by index |
-| `edit` | [`EditCommand`](#edit-workout-and-exercise-feature-editcommand) | Modifies the name or fields of an existing `Workout` or `Exercise` |
-| `find` | [`FindCommand`](#keyword-based-find-feature-findcommand) | Searches for workouts by keyword |
-| `list` | [`ListCommand`](#tiered-listing-feature-listcommand) | Lists workouts at summary, workout-specific, or full-detail scope |
-| `mark` / `unmark` | [`MarkCommand`](#mark-and-unmark-workout-feature-markcommand) | Marks or unmarks a `Workout` as done |
-| `log` | [`LogCommand`](#smart-workout-logging-logcommand) | Initialises a logging session or logs an individual exercise stat |
-| `loglist` | [`LogListCommand`](#history-retrieval-loglist) | Displays the full workout history from `HistoryStorage` |
-| `help` | [`HelpCommand`](#help-command-helpcommand) | Displays all available commands and their formats |
-| `exit` | [`ExitCommand`](#exit-command-exitcommand) | Sets `isExit = true` to signal the main loop to terminate |
+| Keyword           | Command Subclass                                                             | Responsibility                                                           |
+|-------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| `add`             | [`AddCommand`](#add-workout-and-exercise-feature-addcommand)                 | Adds a new `Workout` or `Exercise` to the `WorkoutList`                  |
+| `delete`          | [`DeleteCommand`](#delete-feature-deletecommand)                             | Removes a `Workout` or `Exercise` by index                               |
+| `edit`            | [`EditCommand`](#edit-workout-and-exercise-feature-editcommand)              | Modifies the name or fields of an existing `Workout` or `Exercise`       |
+| `find`            | [`FindCommand`](#keyword-based-find-feature-findcommand)                     | Searches for workouts by keyword                                         |
+| `list`            | [`ListCommand`](#tiered-listing-feature-listcommand)                         | Lists workouts at summary, workout-specific, or full-detail scope        |
+| `mark` / `unmark` | [`MarkCommand`](#mark-and-unmark-workout-feature-markcommand)                | Marks or unmarks a `Workout` as done                                     |
+| `log`             | [`LogCommand`](#smart-workout-logging-logcommand)                            | Initialises a logging session or logs an individual exercise stat        |
+| `loglist`         | [`LogListCommand`](#history-retrieval-loglist)                               | Displays the full workout history from `HistoryStorage`                  |
+| `help`            | [`HelpCommand`](#help-command-helpcommand)                                   | Displays all available commands and their formats                        |
+| `exit`            | [`ExitCommand`](#exit-command-exitcommand)                                   | Sets `isExit = true` to signal the main loop to terminate                |  
+
 The `isExit()` method is defined in the base class and returns `false` for all commands
 except `ExitCommand`, which overrides it to return `true`.
 
@@ -428,33 +429,44 @@ no changes were recorded.
 
 ### Keyword-Based Find Feature (`FindCommand`)
 
-The find mechanism allows users to search their data to two levels of extent - across all workouts, or within
-a specific workout's exercise list.
+The find mechanism allows users to perform a global search across all workouts and exercises
+using a single keyword.
+
+**How it works:** It receives a single keyword and searches globally across all workouts and exercises.
+
+- `find KEYWORD` - searches all workout names and exercise names for the keyword
+
+**Examples:**
+```
+find push
+find benchpress
+```
 
 **Implementation:**
-* `FindCommand` extends the base `Command` class and overrides `execute()`. It uses flag detection on the raw input
-  string to route execution to one of two helper methods:
-* `handleFindWorkout()`: Triggered by `find w/WORKOUT`. Scans all entries in `WorkoutList` via
-  `WorkoutList#getWorkouts()` using case-insensitive keyword matching, then displays each match's name and
-  exercise count.
-* `handleFindExercise()`: Triggered by `find e/EXERCISE w/WORKOUT`. First calls
-  `WorkoutList#getWorkoutByName()` to pin down the target workout, then iterates its exercise list for matches,
-  displaying name, weight, sets, and reps per result.
-*   In both cases, results are surfaced through `Ui#showMessage()`. If no matches are found, a "Not Found" message
-    is displayed.
+* `FindCommand` extends the base `Command` class and overrides `execute()`. It takes a single
+  keyword and performs a case-insensitive, partial-match search across the entire data model.
+* The search iterates through all workouts in `WorkoutList` via `WorkoutList#getWorkouts()`.
+  For each workout, it checks whether the workout name contains the keyword, and then checks
+  each exercise name within that workout.
+* Matching workouts are displayed with their name and exercise count. Matching exercises are
+  displayed with their name, parent workout, weight, sets, and reps.
+* All results are surfaced through `Ui#showMessage()`. If no matches are found, a
+  "No matching workouts or exercises found" message is displayed.
 
 **Design Considerations:**
 
-**Why it is implemented this way:** Centralising both search variants within a single `FindCommand` class
-keeps the flag-routing logic cohesive and avoids complicating the command hierarchy. The two-level search
-(workout vs. exercise) mirrors the natural hierarchy of the data model, making the feature easy to use.
+**Why it is implemented this way:** A single global search is simpler and more intuitive than
+requiring users to specify separate flags for workout vs. exercise searches. Users can quickly
+find any relevant entry without needing to know whether the keyword matches a workout name or
+an exercise name.
 
-**Alternatives considered:** Creating separate `FindWorkoutCommand` and `FindExerciseCommand` classes. This
-was rejected as it would complicate the parser and duplicate the shared flag-parsing and result-display logic.
+**Alternatives considered:** Supporting separate `find w/KEYWORD` and `find e/KEYWORD w/WORKOUT`
+formats to allow scoped searches. This was rejected in favour of a simpler single-keyword approach
+that searches everything at once, reducing the learning curve for users.
 
 **Sequence Diagram:**
 
-The following sequence diagram illustrates how `FindCommand` determines the search scope and interacts with
+The following sequence diagram illustrates how `FindCommand` performs a global search and interacts with
 `WorkoutList` and `Ui`:
 
 <img src="diagrams/commands/find/FindCommand.png" width="700" />
@@ -488,12 +500,12 @@ The following sequence diagram illustrates how the `ListCommand` determines the 
 
 ### Mark and Unmark Workout Feature (`MarkCommand`)
 
-The mark feature lets users track their weekly training progress by flagging workouts as done or not done. At a glance, users can see which workouts they have completed and which ones they still have left — without needing to remember manually.
+The mark feature lets users track their weekly training progress by flagging workouts as done or not done. At a glance, users can see which workouts they have completed and which ones they still have left, without needing to remember manually.
 
 **How it works:** It supports two operations:
 
-- `mark w/WORKOUT` — marks the named workout as done
-- `unmark w/WORKOUT` — marks the named workout as not done
+- `mark w/WORKOUT` - marks the named workout as done
+- `unmark w/WORKOUT` - marks the named workout as not done
 
 **Examples:**
 ```
@@ -716,7 +728,7 @@ to accomplish tasks faster than using a mouse in a GUI.
 | **Sticky Session** | A UX shortcut where the application remembers the last workout name used in a `log` command, so subsequent exercise logs do not require re-typing the `w/` flag. |
 | **Smart Overwriting** | The mechanism used by `HistoryStorage` to update an existing log entry in-place (rather than appending a duplicate) when the same exercise is re-logged on the same date. |
 
-> **In short:** GitSwole uses a two-level hierarchy — **Workout Sessions** contain **Exercises**. When you train, you **log** your performance against that template, building a chronological history you can review anytime.
+> **In short:** GitSwole uses a two-level hierarchy - **Workout Sessions** contain **Exercises**. When you train, you **log** your performance against that template, building a chronological history you can review anytime.
 
 ---
 
@@ -848,21 +860,31 @@ to accomplish tasks faster than using a mouse in a GUI.
     add e/bent over row w/pull wt/60 s/3 r/10
     add e/bicep curl w/pull wt/20 s/3 r/12
     ```
-2. Search for exercises by keyword:
+2. Search for a keyword matching a workout:
     ```   
-    find e/bench w/push
+    find push
     ```
-   **Expected output:** ``bench press`` is listed as a match.
-3. Search for a keyword that matches multiple entries:
+   **Expected output:** `push` is listed as a matching workout with its exercise count.
+3. Search for a keyword matching exercises:
     ```   
-    find e/b w/push
+    find bench
     ```
-   **Expected output:** `bench press`, `bent over row`, and `bicep curl` are all listed.
-4. Search for a keyword with no matches:
+   **Expected output:** `bench press` is listed as a matching exercise with weight, sets, and reps.
+4. Search for a keyword that matches multiple entries:
     ```   
-    find e/squat w/legs
+    find b
     ```
-   **Expected output:** A message indicating no matching exercises were found.
+   **Expected output:** `bench press`, `bent over row`, and `bicep curl` are all listed as matching exercises.
+5. Search for a keyword matching both workouts and exercises:
+    ```   
+    find pull
+    ```
+   **Expected output:** `pull` is listed as a matching workout, and any exercises containing "pull" are also listed.
+6. Search for a keyword with no matches:
+    ```   
+    find squat
+    ```
+   **Expected output:** A message indicating no matching workouts or exercises were found.
 
 ---
 
@@ -1008,12 +1030,15 @@ ________________________________________________________________________________
 
 #### Find:
 ```
-find e/bench w/push
-bench press | Weight: 90kg | Sets: 3 | Reps: 8
+find push
+[Workout] push | Exercises: 2
 ____________________________________________________________________________________________________
-find e/squat w/legs
+find bench
+[Exercise] bench press (in push) | Weight: 90kg | Sets: 3 | Reps: 8
 ____________________________________________________________________________________________________
-Workout does not exist. Try again...
+find squat
+____________________________________________________________________________________________________
+No matching workouts or exercises found :(
 ____________________________________________________________________________________________________
 ```
 #### Exit:

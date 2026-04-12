@@ -40,9 +40,6 @@ class FindCommandTest {
         System.setOut(originalOut);
     }
 
-    /**
-     * Populates the list with two workouts and a few exercises.
-     */
     private void populateWorkouts() {
         Workout push = new Workout("push day");
         push.addExercise(new Exercise("bench press", 60, 3, 8));
@@ -55,146 +52,127 @@ class FindCommandTest {
         workouts.addWorkout(pull);
     }
 
-    // find workout  (find w/KEYWORD)
+    // --- Matching workout names ---
+
     @Test
-    @DisplayName("find w/KEYWORD — shows matching workout name and exercise count")
-    void findWorkout_matchFound_showsResult() throws GitSwoleException {
+    @DisplayName("keyword matching workout name shows [Workout] result")
+    void find_workoutNameMatch_showsWorkoutResult() throws GitSwoleException {
         populateWorkouts();
-        new FindCommand("find w/push").execute(workouts, ui);
+        new FindCommand("push").execute(workouts, ui);
         String output = outContent.toString();
+        assertTrue(output.contains("[Workout]"));
         assertTrue(output.contains("push day"));
-        assertTrue(output.contains("2"));
+        assertTrue(output.contains("2")); // exercise count
     }
 
     @Test
-    @DisplayName("find w/KEYWORD — partial keyword matches workout")
-    void findWorkout_partialKeyword_matches() throws GitSwoleException {
+    @DisplayName("partial keyword matches multiple workouts")
+    void find_partialKeyword_matchesMultipleWorkouts() throws GitSwoleException {
         populateWorkouts();
-        new FindCommand("find w/day").execute(workouts, ui);
+        new FindCommand("day").execute(workouts, ui);
         String output = outContent.toString();
         assertTrue(output.contains("push day"));
         assertTrue(output.contains("pull day"));
     }
 
     @Test
-    @DisplayName("find w/KEYWORD — search is case-insensitive")
-    void findWorkout_caseInsensitive() throws GitSwoleException {
+    @DisplayName("search is case-insensitive for workout names")
+    void find_caseInsensitive_workoutMatch() throws GitSwoleException {
         populateWorkouts();
-        new FindCommand("find w/PUSH").execute(workouts, ui);
+        new FindCommand("PUSH").execute(workouts, ui);
         assertTrue(outContent.toString().contains("push day"));
     }
 
+    // --- Matching exercise names ---
+
     @Test
-    @DisplayName("find w/KEYWORD — shows 'Workout Not Found' when no match")
-    void findWorkout_noMatch_showsNotFound() throws GitSwoleException {
+    @DisplayName("keyword matching exercise name shows [Exercise] result with details")
+    void find_exerciseNameMatch_showsExerciseResult() throws GitSwoleException {
         populateWorkouts();
-        new FindCommand("find w/legs").execute(workouts, ui);
-        assertTrue(outContent.toString().contains("Workout Not Found"));
-    }
-
-    @Test
-    @DisplayName("find w/ — throws INCOMPLETE_COMMAND when keyword is blank")
-    void findWorkout_blankKeyword_throwsIncompleteCommand() {
-        GitSwoleException ex = assertThrows(GitSwoleException.class,
-            () -> new FindCommand("find w/").execute(workouts, ui));
-        assertEquals(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, ex.getType());
-    }
-
-    @Test
-    @DisplayName("find with missing w/ prefix — throws INCOMPLETE_COMMAND")
-    void findWorkout_missingPrefix_throwsIncompleteCommand() {
-        GitSwoleException ex = assertThrows(GitSwoleException.class,
-            () -> new FindCommand("find push").execute(workouts, ui));
-        assertEquals(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, ex.getType());
-    }
-
-    @Test
-    @DisplayName("find w/KEYWORD — empty workout list shows 'Workout Not Found'")
-    void findWorkout_emptyList_showsNotFound() throws GitSwoleException {
-        new FindCommand("find w/push").execute(workouts, ui);
-        assertTrue(outContent.toString().contains("Workout Not Found"));
-    }
-
-    // find exercise  (find e/KEYWORD w/WORKOUT)
-    @Test
-    @DisplayName("find e/KEYWORD w/WORKOUT — shows matching exercise details")
-    void findExercise_matchFound_showsDetails() throws GitSwoleException {
-        populateWorkouts();
-        new FindCommand("find e/bench w/push day").execute(workouts, ui);
+        new FindCommand("bench").execute(workouts, ui);
         String output = outContent.toString();
+        assertTrue(output.contains("[Exercise]"));
         assertTrue(output.contains("bench press"));
-        assertTrue(output.contains("60")); // weight
-        assertTrue(output.contains("3")); // sets
-        assertTrue(output.contains("8")); // reps
+        assertTrue(output.contains("push day"));
+        assertTrue(output.contains("60"));  // weight
+        assertTrue(output.contains("3"));   // sets
+        assertTrue(output.contains("8"));   // reps
     }
 
     @Test
-    @DisplayName("find e/KEYWORD w/WORKOUT — partial keyword matches exercise")
-    void findExercise_partialKeyword_matches() throws GitSwoleException {
+    @DisplayName("partial keyword matches multiple exercises across workouts")
+    void find_partialKeyword_matchesMultipleExercises() throws GitSwoleException {
         populateWorkouts();
-        new FindCommand("find e/press w/push day").execute(workouts, ui);
+        new FindCommand("press").execute(workouts, ui);
         String output = outContent.toString();
         assertTrue(output.contains("bench press"));
         assertTrue(output.contains("overhead press"));
     }
 
     @Test
-    @DisplayName("find e/KEYWORD w/WORKOUT — search is case-insensitive")
-    void findExercise_caseInsensitive() throws GitSwoleException {
+    @DisplayName("search is case-insensitive for exercise names")
+    void find_caseInsensitive_exerciseMatch() throws GitSwoleException {
         populateWorkouts();
-        new FindCommand("find e/BENCH w/push day").execute(workouts, ui);
-        assertTrue(outContent.toString().contains("bench press"));
+        new FindCommand("DEADLIFT").execute(workouts, ui);
+        assertTrue(outContent.toString().contains("deadlift"));
     }
 
+    // --- keyword matches both workout and exercise ---
+
     @Test
-    @DisplayName("find e/KEYWORD w/WORKOUT — shows 'Exercise Not Found' when no match")
-    void findExercise_noMatch_showsNotFound() throws GitSwoleException {
+    @DisplayName("keyword matching both workout and exercise shows both results")
+    void find_matchesBothWorkoutAndExercise() throws GitSwoleException {
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("push up", 0, 3, 20));
+        workouts.addWorkout(push);
+
+        new FindCommand("push").execute(workouts, ui);
+        String output = outContent.toString();
+        assertTrue(output.contains("[Workout]"));
+        assertTrue(output.contains("[Exercise]"));
+    }
+
+    // --- No match ---
+
+    @Test
+    @DisplayName("no match shows 'No matching' message")
+    void find_noMatch_showsNoMatchMessage() throws GitSwoleException {
         populateWorkouts();
-        new FindCommand("find e/squat w/push day").execute(workouts, ui);
-        assertTrue(outContent.toString().contains("Exercise Not Found"));
+        new FindCommand("legs").execute(workouts, ui);
+        assertTrue(outContent.toString().contains("No matching workouts or exercises found :("));
     }
 
     @Test
-    @DisplayName("find e/KEYWORD w/UNKNOWN — throws IDX_OUTOFBOUNDS for missing workout")
-    void findExercise_unknownWorkout_throwsIdxOutOfBounds() {
-        GitSwoleException ex = assertThrows(GitSwoleException.class,
-            () -> new FindCommand("find e/bench w/legs").execute(workouts, ui));
-        assertEquals(GitSwoleException.ErrorType.IDX_OUTOFBOUNDS, ex.getType());
+    @DisplayName("empty workout list shows 'No matching' message")
+    void find_emptyList_showsNoMatchMessage() throws GitSwoleException {
+        new FindCommand("push").execute(workouts, ui);
+        assertTrue(outContent.toString().contains("No matching workouts or exercises found :("));
     }
 
+    // --- Empty keyword ---
+
     @Test
-    @DisplayName("find e/ w/WORKOUT — throws INCOMPLETE_COMMAND when exercise keyword is blank")
-    void findExercise_blankExerciseKeyword_throwsIncompleteCommand() {
-        workouts.addWorkout(new Workout("push day"));
+    @DisplayName("empty keyword throws INCOMPLETE_COMMAND")
+    void find_emptyKeyword_throwsIncompleteCommand() {
         GitSwoleException ex = assertThrows(GitSwoleException.class,
-            () -> new FindCommand("find e/ w/push day").execute(workouts, ui));
+            () -> new FindCommand("").execute(workouts, ui));
         assertEquals(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, ex.getType());
     }
 
     @Test
-    @DisplayName("find e/KEYWORD — throws INCOMPLETE_COMMAND when w/ prefix is absent")
-    void findExercise_missingWorkoutPrefix_throwsIncompleteCommand() {
+    @DisplayName("whitespace-only keyword throws INCOMPLETE_COMMAND")
+    void find_whitespaceKeyword_throwsIncompleteCommand() {
         GitSwoleException ex = assertThrows(GitSwoleException.class,
-            () -> new FindCommand("find e/bench").execute(workouts, ui));
+            () -> new FindCommand("   ").execute(workouts, ui));
         assertEquals(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, ex.getType());
     }
 
-    @Test
-    @DisplayName("find e/KEYWORD w/WORKOUT — does not show exercises from other workouts")
-    void findExercise_isolatesWorkout() throws GitSwoleException {
-        populateWorkouts();
-        new FindCommand("find e/press w/push day").execute(workouts, ui);
-        assertFalse(outContent.toString().contains("deadlift"));
-        assertFalse(outContent.toString().contains("barbell row"));
-    }
+    // --- isExit ---
 
-    // isExit
     @Test
     @DisplayName("isExit always returns false")
-    void findCommand_isExitFalse() throws GitSwoleException {
-        populateWorkouts();
-        FindCommand cmd = new FindCommand("find w/push");
-        cmd.execute(workouts, ui);
+    void findCommand_isExitFalse() {
+        FindCommand cmd = new FindCommand("push");
         assertFalse(cmd.isExit());
     }
 }

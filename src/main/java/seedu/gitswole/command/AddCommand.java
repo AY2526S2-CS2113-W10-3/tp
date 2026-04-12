@@ -74,6 +74,14 @@ public class AddCommand extends Command {
             );
         }
 
+        if (workouts.containsWorkout(workoutName)) {
+            LOGGER.log(Level.WARNING, "AddWorkout failed: Duplicate workout name '{0}'.", workoutName);
+            throw new GitSwoleException(
+                GitSwoleException.ErrorType.DEFAULT,
+                "A workout named '" + workoutName + "' already exists! Try a different name."
+            );
+        }
+
         workouts.addWorkout(new Workout(workoutName));
         ui.showMessage("Successfully added a " + workoutName + " session! Remember to add your exercises :)");
         ui.showLine();

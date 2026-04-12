@@ -11,19 +11,20 @@ Given below are my contributions to the project.
 
 ---
 
-### New Feature: Find Workout Session and Find Exercise
+### New Feature: Find Workout Session and Exercise
 
-* **What it does:** Allows the user to search for workout sessions by keyword
-  (`find w/KEYWORD`), or search for specific exercises within a given workout
-  (`find e/KEYWORD w/WORKOUT`). Matching results are displayed with summary details.
+* **What it does:** Allows the user to search across all workouts and exercises
+  using a single keyword (`find KEYWORD`). Matching workout names and exercise
+  names are displayed with summary details.
 * **Justification:** As the workout list grows, manually scrolling through all entries
   becomes impractical. A search feature lets users quickly locate workouts or
   exercises without having to remember exact names.
-* **Highlights:** The implementation reuses the same flag-based dispatch pattern as
-  other commands — `execute()` checks for the `e/` prefix to decide between a
-  workout search and an exercise search. Keyword matching is case-insensitive and
-  supports partial matches, so entering `leg` will find workouts like "Leg Day" or
-  "Legs & Glutes". Exercise results include weight, sets, and reps for quick reference.
+* **Highlights:** The implementation performs a global search — it iterates through
+  all workouts and their exercises, checking both workout names and exercise names
+  against the keyword. Keyword matching is case-insensitive and supports partial
+  matches, so entering `leg` will find workouts like "Leg Day" or exercises like
+  "leg press". Matching workouts show their exercise count, while matching exercises
+  include weight, sets, and reps for quick reference.
 
 ### New Feature: Dynamic Welcome Page
 
