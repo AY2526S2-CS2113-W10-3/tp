@@ -127,7 +127,7 @@ public class LogCommand extends Command {
     private void handleLogExercise(WorkoutList workouts, Ui ui) throws GitSwoleException {
         String exerciseName = Parser.parseValue(response, "e/");
         String workoutName = Parser.parseValue(response, "w/");
-        String remark = Parser.parseValue(response, "remark/");
+        String remark = Parser.parseRemark(response);
 
         // Use the sticky session if w/ flag is missing
         if (workoutName == null) {

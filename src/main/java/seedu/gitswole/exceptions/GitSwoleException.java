@@ -16,6 +16,7 @@ public class GitSwoleException extends Exception {
         IDX_OUTOFBOUNDS,
         NOT_FOUND,
         NEG_INPUT,
+        DUPLICATE,
         DEFAULT
     }
 
@@ -52,6 +53,8 @@ public class GitSwoleException extends Exception {
         case NOT_FOUND:
             return "'" + command + "' not found. Please check your spelling.";
         case NEG_INPUT:
+            return command;
+        case DUPLICATE:
             return command;
         default:
             return "Error! Try again...";

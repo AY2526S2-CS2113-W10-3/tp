@@ -1,8 +1,8 @@
 package seedu.gitswole.command;
 import seedu.gitswole.assets.WorkoutList;
 import seedu.gitswole.ui.Ui;
+import seedu.gitswole.parser.Parser;
 import java.util.logging.Level;
-
 /**
  * Represents a command that deletes a workout or an exercise from the workout list.
  * <p>
@@ -39,9 +39,9 @@ public class DeleteCommand extends Command {
         assert ui != null : "Ui must be initialized before execution";
 
         // Check if the user is trying to delete an exercise (contains "e/")
-        if (arguments.contains("e/")) {
+        if (Parser.parseValue(arguments, "e/") != null) {
             deleteExercise(workouts, ui);
-        } else if (arguments.contains("w/")) { // Check if the user is trying to delete a workout (contains "w/")
+        } else if (Parser.parseValue(arguments, "w/") != null) {
             deleteWorkout(workouts, ui);
         } else { // Handle invalid formats
             LOGGER.log(Level.WARNING, "Invalid delete format received: {0}", arguments);

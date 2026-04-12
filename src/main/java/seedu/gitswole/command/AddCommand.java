@@ -74,10 +74,12 @@ public class AddCommand extends Command {
             );
         }
 
+        Parser.validateName(workoutName, "Workout");
+
         if (workouts.containsWorkout(workoutName)) {
             LOGGER.log(Level.WARNING, "AddWorkout failed: Duplicate workout name '{0}'.", workoutName);
             throw new GitSwoleException(
-                GitSwoleException.ErrorType.DEFAULT,
+                GitSwoleException.ErrorType.DUPLICATE,
                 "A workout named '" + workoutName + "' already exists! Try a different name."
             );
         }
@@ -122,6 +124,9 @@ public class AddCommand extends Command {
                 "Missing name of workout. Usage: add e/EXERCISE_NAME w/WORKOUT_NAME"
             );
         }
+
+        Parser.validateName(exerciseName, "Exercise");
+        Parser.validateName(workoutName, "Workout");
 
         Workout targetWorkout = workouts.getWorkoutByName(workoutName);
         if (targetWorkout == null) {

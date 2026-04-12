@@ -95,7 +95,11 @@ public class GitSwole {
 
     /**
      * Starts the main application loop, reading and executing user commands
-     * until an exit command is issued.
+     * until an exit command is issued or stdin is closed (EOF).
+     * <p>
+     * All {@link GitSwoleException}s are caught and shown to the user so the loop
+     * can continue. Any other unchecked exception is also caught as a safety net
+     * to prevent a single bad command from terminating the entire session.
      */
     public void run() {
         Parser parser = new Parser();
@@ -104,6 +108,10 @@ public class GitSwole {
         while (!isExit) {
             try {
                 String fullCommand = ui.readCommand();
+                if (fullCommand == null) {
+                    logger.log(Level.INFO, "End of input stream reached — exiting loop.");
+                    break;
+                }
                 Command c = parser.readResponse(fullCommand, workouts);
                 c.execute(workouts, ui);
                 saveWorkouts();
