@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import seedu.gitswole.assets.Exercise;
 import seedu.gitswole.assets.Workout;
 import seedu.gitswole.assets.WorkoutList;
 import seedu.gitswole.exceptions.GitSwoleException;
@@ -42,7 +43,9 @@ public class MarkCommandTest {
     @Test
     @DisplayName("mark w/WORKOUT - marks existing workout as done")
     void markWorkout_validName_marksasDone() throws GitSwoleException {
-        workouts.addWorkout(new Workout("push"));
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("bench", 0, 0, 0));
+        workouts.addWorkout(push);
         new MarkCommand("mark w/push").execute(workouts, ui);
         assertTrue(workouts.getWorkoutByName("push").isDone());
     }
@@ -50,9 +53,21 @@ public class MarkCommandTest {
     @Test
     @DisplayName("mark w/WORKOUT - prints [X] confirmation message")
     void markWorkout_validName_printsStatusIcon() throws GitSwoleException {
-        workouts.addWorkout(new Workout("push"));
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("bench", 0, 0, 0));
+        workouts.addWorkout(push);
         new MarkCommand("mark w/push").execute(workouts, ui);
         assertTrue(outContent.toString().contains("Successfully marked 'push' as done!"));
+    }
+
+    @Test
+    @DisplayName("mark empty workout - throws exception")
+    void markWorkout_emptyWorkout_throwsException() {
+        workouts.addWorkout(new Workout("empty"));
+        GitSwoleException ex = assertThrows(GitSwoleException.class,
+                () -> new MarkCommand("mark w/empty").execute(workouts, ui));
+        assertEquals(GitSwoleException.ErrorType.DEFAULT, ex.getType());
+        assertTrue(ex.getMessage().contains("no exercises"));
     }
 
     @Test
@@ -130,6 +145,7 @@ public class MarkCommandTest {
     @DisplayName("mark w/WORKOUT - marking already marked workout keeps it marked")
     void markWorkout_alreadyMarked_remainsMarked() throws GitSwoleException {
         Workout push = new Workout("push");
+        push.addExercise(new Exercise("bench", 0, 0, 0));
         push.markDone(true);
         workouts.addWorkout(push);
         new MarkCommand("mark w/push").execute(workouts, ui);
@@ -139,7 +155,9 @@ public class MarkCommandTest {
     @Test
     @DisplayName("unmark w/WORKOUT - unmarking already unmarked workout keeps it unmarked")
     void unmarkWorkout_alreadyUnmarked_remainsUnmarked() throws GitSwoleException {
-        workouts.addWorkout(new Workout("push"));
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("bench", 0, 0, 0));
+        workouts.addWorkout(push);
         new MarkCommand("unmark w/push").execute(workouts, ui);
         assertTrue(!workouts.getWorkoutByName("push").isDone());
     }
@@ -147,7 +165,9 @@ public class MarkCommandTest {
     @Test
     @DisplayName("mark w/WORKOUT - multi-word workout name is handled correctly")
     void markWorkout_multiWordName_marksCorrectly() throws GitSwoleException {
-        workouts.addWorkout(new Workout("push day"));
+        Workout pushDay = new Workout("push day");
+        pushDay.addExercise(new Exercise("bench", 0, 0, 0));
+        workouts.addWorkout(pushDay);
         new MarkCommand("mark w/push day").execute(workouts, ui);
         assertTrue(workouts.getWorkoutByName("push day").isDone());
     }

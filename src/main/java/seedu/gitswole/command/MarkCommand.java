@@ -68,6 +68,12 @@ public class MarkCommand extends Command {
         }
         assert target != null : "Target workout must not be null after null check";
 
+        if (isDone && target.getNumOfExercises() == 0) {
+            LOGGER.log(Level.WARNING, "MarkCommand failed: Workout ''{0}'' has no exercises.", workoutName);
+            throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT,
+                    "Cannot mark \"" + target.getWorkoutName() + "\" as done because it has no exercises!");
+        }
+
         target.markDone(isDone);
         LOGGER.log(Level.INFO, "Workout ''{0}'' marked as {1}",
                 new Object[]{workoutName, isDone ? "done" : "not done"});

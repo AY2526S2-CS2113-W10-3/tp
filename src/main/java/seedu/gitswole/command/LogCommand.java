@@ -65,6 +65,8 @@ public class LogCommand extends Command {
         assert workouts != null : "WorkoutList must be initialized";
         assert ui != null : "Ui must be initialized";
 
+        Parser.validateNoUnknownFlags(response, "e/", "w/", "wt/", "s/", "r/");
+
         if (response.contains(" e/")) {
             handleLogExercise(workouts, ui);
         } else {
@@ -92,6 +94,13 @@ public class LogCommand extends Command {
         if (workout == null) {
             LOGGER.log(Level.INFO, "LogWorkout failed: Workout '{0}' not found.", workoutName);
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND, workoutName);
+        }
+
+        if (workout.getNumOfExercises() == 0) {
+            LOGGER.log(Level.WARNING, "LogWorkout failed: Workout '{0}' has no exercises.", workoutName);
+            throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT,
+                "Cannot log \"" + workout.getWorkoutName() + "\" because it has no exercises! " +
+                "Add some first using: add e/EXERCISE w/" + workout.getWorkoutName());
         }
 
         // SMART CHECK: Only write header if a session doesn't exist for today
@@ -136,7 +145,7 @@ public class LogCommand extends Command {
 
         if (workoutName == null) {
             LOGGER.log(Level.WARNING, "LogExercise failed: Missing workout context.");
-            throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND, 
+            throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT, 
                 "No active workout session found. Please specify the workout using w/WORKOUT_NAME " +
                 "(e.g., log e/" + exerciseName + " w/push)");
         }
@@ -157,32 +166,21 @@ public class LogCommand extends Command {
         if (exercise == null) {
             LOGGER.log(Level.INFO, "LogExercise failed: Exercise '{0}' not found in '{1}'.", 
                 new Object[]{exerciseName, workoutName});
+
+            Workout otherWorkout = workouts.getWorkoutByExerciseName(exerciseName);
+            if (otherWorkout != null) {
+                String helpMsg = "\"" + exerciseName + "\" not found in \"" + workoutName + "\". " +
+                        "Did you mean to log it under \"" + otherWorkout.getWorkoutName() + "\" ?";
+                throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT, helpMsg);
+            }
+
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND, exerciseName);
         }
 
         // Update the stats in memory
-        int weight = Parser.parseOptionalInt(response, "wt/", exercise.getWeight());
-        int sets = Parser.parseOptionalInt(response, "s/", exercise.getSets());
-        int reps = Parser.parseOptionalInt(response, "r/", exercise.getReps());
-
-        if (weight < 0) {
-            throw new GitSwoleException(
-                GitSwoleException.ErrorType.NEG_INPUT,
-                "Weight cannot be negative. Usage: wt/WEIGHT (e.g. wt/40)"
-            );
-        }
-        if (sets < 0) {
-            throw new GitSwoleException(
-                GitSwoleException.ErrorType.NEG_INPUT,
-                "Sets cannot be negative. Usage: s/SETS (e.g. s/3)"
-            );
-        }
-        if (reps < 0) {
-            throw new GitSwoleException(
-                GitSwoleException.ErrorType.NEG_INPUT,
-                "Reps cannot be negative. Usage: r/REPS (e.g. r/8)"
-            );
-        }
+        int weight = Parser.parseAndValidateInt(response, "wt/", exercise.getWeight(), 1000, "Weight");
+        int sets = Parser.parseAndValidateInt(response, "s/", exercise.getSets(), 50, "Sets");
+        int reps = Parser.parseAndValidateInt(response, "r/", exercise.getReps(), 100, "Reps");
 
         exercise.setWeight(weight);
         exercise.setSets(sets);

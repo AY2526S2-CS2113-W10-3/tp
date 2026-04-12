@@ -17,7 +17,10 @@ import seedu.gitswole.command.Command;
 import seedu.gitswole.exceptions.GitSwoleException;
 import seedu.gitswole.ui.Ui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -149,6 +152,46 @@ public class Parser {
     // @@author
 
     /**
+     * Validates that the input string does not contain any unrecognized flags.
+     * A flag is defined as any word ending with a '/'.
+     *
+     * @param input         The full command string to check.
+     * @param recognizedFlags A list of flags that are allowed for this command (e.g., "w/", "e/").
+     * @throws GitSwoleException If any unknown flags are detected.
+     */
+    public static void validateNoUnknownFlags(String input, String... recognizedFlags) throws GitSwoleException {
+        if (input == null || input.isBlank()) {
+            return;
+        }
+
+        String[] words = input.split("\\s+");
+        ArrayList<String> unknownFlags = new ArrayList<>();
+        List<String> allowed = Arrays.asList(recognizedFlags);
+
+        // Skip the first word as it is the command name (e.g., "log")
+        for (int i = 1; i < words.length; i++) {
+            String word = words[i];
+            if (word.contains("/")) {
+                // Check if this word (or the part ending in /) is a flag
+                int slashIdx = word.indexOf('/');
+                String potentialFlag = word.substring(0, slashIdx + 1);
+
+                if (!allowed.contains(potentialFlag) && !potentialFlag.equals("remark/")) {
+                    unknownFlags.add("\"" + potentialFlag + "\"");
+                }
+            }
+        }
+
+        if (!unknownFlags.isEmpty()) {
+            String flagLabel = unknownFlags.size() > 1 ? "flags" : "flag";
+            String joinedFlags = String.join(", ", unknownFlags);
+            throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT,
+                    "I don't recognise the " + flagLabel + " " + joinedFlags + 
+                    ". Please check your spelling and try again!");
+        }
+    }
+
+    /**
      * Extracts the value associated with a flag in the user's input string.
      * <p>
      * Flags follow the format {@code flagName/value}, where the value spans
@@ -179,28 +222,72 @@ public class Parser {
             return null;
         }
 
-        // 2. Find the next flag, but do not scan past remark/
+        // 2. Find where the value ends
+        // Default to end of string
         int end = input.length();
 
         // Find where remark/ starts (if it exists)
         int remarkIdx = input.indexOf(" remark/");
         if (remarkIdx == -1) {
-            remarkIdx = input.startsWith("remark/") ? 0 : input.length();
+            remarkIdx = input.startsWith("remark/") ? 0 : -1;
         }
 
-        // Limit search to before remark/
-        int searchEnd = Math.min(remarkIdx, input.length());
+        // If remark/ is present and after start, it's a potential end point
+        if (remarkIdx != -1 && remarkIdx > start) {
+            end = remarkIdx;
+        }
 
-        // Only search within the allowed region
+        // Find the next flag after start
         Matcher m = Pattern.compile(" [a-zA-Z]+/")
-                .matcher(input.substring(0, searchEnd));
+                .matcher(input);
 
-        if (m.find(start)) {
+        // If another flag is found BEFORE the current end, that's our real end
+        if (m.find(start) && m.start() < end) {
             end = m.start();
         }
 
         String value = input.substring(start, end).trim();
         return value.isEmpty() ? null : value;
+    }
+
+    /**
+     * Extracts an integer value associated with a flag in the user's input string,
+     * validates it against a maximum limit, and throws an exception on failure.
+     *
+     * @param input        The full command string entered by the user.
+     * @param prefix       The flag to search for (e.g. {@code "wt/"}, {@code "s/"}, {@code "r/"}).
+     * @param defaultValue The value to return if the flag is missing.
+     * @param maxLimit     The maximum allowed value for this field.
+     * @param fieldLabel   A human-readable label for error messages (e.g. "Weight").
+     * @return The parsed integer value, or {@code defaultValue} if the flag is absent.
+     * @throws GitSwoleException If the value is not a valid number or exceeds the maximum limit.
+     */
+    public static int parseAndValidateInt(String input, String prefix, int defaultValue, int maxLimit,
+                                          String fieldLabel) throws GitSwoleException {
+        assert input != null : "Input string must not be null";
+        assert prefix != null : "Prefix must not be null";
+
+        String valueStr = parseValue(input, prefix);
+        if (valueStr == null) {
+            return defaultValue;
+        }
+
+        try {
+            long val = Long.parseLong(valueStr.trim());
+            if (val < 0) {
+                throw new GitSwoleException(GitSwoleException.ErrorType.NEG_INPUT,
+                        fieldLabel + " cannot be negative. Usage: " + prefix + "NUMBER");
+            }
+            if (val > maxLimit) {
+                throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT,
+                        "Whoa there, David Goggins! " + fieldLabel + " cannot exceed " + maxLimit + ".");
+            }
+            return (int) val;
+        } catch (NumberFormatException e) {
+            throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT,
+                    "Invalid input for " + fieldLabel + ": '" + valueStr +
+                            "'. Please enter a valid number (e.g., " + prefix + "10).");
+        }
     }
 
     /**

@@ -56,6 +56,8 @@ public class GitSwoleException extends Exception {
             return command;
         case DUPLICATE:
             return command;
+        case DEFAULT:
+            return command;
         default:
             return "Error! Try again...";
         }

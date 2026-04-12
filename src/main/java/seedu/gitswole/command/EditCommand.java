@@ -46,6 +46,9 @@ public class EditCommand extends Command{
     @Override
     public void execute(WorkoutList workouts, Ui ui) throws GitSwoleException {
         assert response != null : "Response cannot be null";
+
+        Parser.validateNoUnknownFlags(response, "w/", "e/");
+
         if (response.contains(" e/")) {
             handleEditExercise(workouts, ui);
         } else {
@@ -187,45 +190,27 @@ public class EditCommand extends Command{
             exerciseToEdit.setExerciseName(en);
             hasChanged = true;
         }
-        if (wt != null && !wt.isEmpty()) {
-            int wtInt = validInput(wt, ui);
-            if (wtInt >= 0) {
-                exerciseToEdit.setWeight(wtInt);
-                hasChanged = true;
-            }
-        }
-        if (s != null && !s.isEmpty()) {
-            int sInt = validInput(s, ui);
-            if (sInt >= 0) {
-                exerciseToEdit.setSets(sInt);
-                hasChanged = true;
-            }
+        
+        // Use parseAndValidateInt directly - it handles its own null checks and parsing
+        int originalWeight = exerciseToEdit.getWeight();
+        int newWeight = Parser.parseAndValidateInt(editLine, "wt/", originalWeight, 1000, "Weight");
+        if (newWeight != originalWeight) {
+            exerciseToEdit.setWeight(newWeight);
+            hasChanged = true;
         }
 
-        if (r != null && !r.isEmpty()) {
-            int rInt = validInput(r, ui);
-            if (rInt >= 0) {
-                exerciseToEdit.setReps(rInt);
-                hasChanged = true;
-            }
+        int originalSets = exerciseToEdit.getSets();
+        int newSets = Parser.parseAndValidateInt(editLine, "s/", originalSets, 50, "Sets");
+        if (newSets != originalSets) {
+            exerciseToEdit.setSets(newSets);
+            hasChanged = true;
         }
-    }
 
-    private int validInput(String wt, Ui ui) {
-        try {
-            long v = Long.parseLong(wt);
-            if (v < 0) {
-                ui.showMessage("Negative number received. Please try again!");
-                return -1;
-            } else if (v > 100000) {
-                ui.showMessage("Relax David Goggins. You aint lifting that much.");
-                return -1;
-            }
-            return (int) v;
-        } catch (NumberFormatException ignored) {
-            ui.showMessage("Invalid input: please enter a whole number between 0 and 100000.");
-            LOGGER.log(Level.INFO, "Nothing was selected.");
-            return -1;
+        int originalReps = exerciseToEdit.getReps();
+        int newReps = Parser.parseAndValidateInt(editLine, "r/", originalReps, 100, "Reps");
+        if (newReps != originalReps) {
+            exerciseToEdit.setReps(newReps);
+            hasChanged = true;
         }
     }
 

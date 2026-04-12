@@ -90,5 +90,31 @@ class WorkoutListTest {
     void removeExercise_unknownWorkout_returnsFalse() {
         assertFalse(workoutList.removeExercise("nonexistent", "bench press"));
     }
+
+    @Test
+    @DisplayName("getWorkoutByExerciseName finds the correct workout")
+    void getWorkoutByExerciseName_findsCorrectWorkout() {
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("benchpress", 60, 3, 8));
+        workoutList.addWorkout(push);
+
+        Workout pull = new Workout("pull");
+        pull.addExercise(new Exercise("deadlift", 100, 1, 5));
+        workoutList.addWorkout(pull);
+
+        Workout result = workoutList.getWorkoutByExerciseName("deadlift");
+        assertNotNull(result);
+        assertEquals("pull", result.getWorkoutName());
+    }
+
+    @Test
+    @DisplayName("getWorkoutByExerciseName returns null when not found")
+    void getWorkoutByExerciseName_notFound_returnsNull() {
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("benchpress", 60, 3, 8));
+        workoutList.addWorkout(push);
+
+        assertNull(workoutList.getWorkoutByExerciseName("squats"));
+    }
 }
 //@@author

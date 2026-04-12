@@ -71,6 +71,8 @@ public class LogListCommand extends Command {
         assert workouts != null : "WorkoutList must not be null";
         assert ui != null : "Ui must not be null";
 
+        Parser.validateNoUnknownFlags(response, "w/", "d/");
+
         try {
             String[] parts = response.trim().split(" ");
             boolean hasArguments = parts.length > 1;

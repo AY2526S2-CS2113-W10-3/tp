@@ -18,7 +18,7 @@ import java.util.Scanner;
  */
 public class Ui {
     private Scanner scanner;
-    private int dashes = 100; // minimally 100, for help print statements
+    private int dashes = 120; // minimally 120, for help print statements
 
     /**
      * Constructs an Ui instance and initializes the input scanner.

@@ -60,7 +60,9 @@ public class HelpCommand extends Command {
             {"List Exercises", "list w/WORKOUT", "list w/pull"},
             {"List ALL Exercises", "list all", "list all"},
             {"Log Session", "log w/WORKOUT", "log w/push"},
-            {"Log Performance", "log e/EXERCISE w/WORKOUT wt/W s/S r/R", "log e/bench w/push wt/60 s/3 r/8"},
+            {"Log Performance", "log e/EXERCISE [w/WORKOUT] [wt/W] [s/S] [r/R] [remark/R]", "log e/bench wt/60 " +
+                    "s/3 r/8"},
+            {"Remark for Exercise", "log e/EXERCISE [w/WORKOUT] remark/R", "log e/bench remark/PR today!"},
             {"Find Workout/Exercise", "find KEYWORD", "find push"},
             {"Mark Workout" , "mark w/WORKOUT_NAME", "mark w/push"},
             {"Unmark Workout", "unmark w/WORKOUT_NAME", "unmark w/push"},

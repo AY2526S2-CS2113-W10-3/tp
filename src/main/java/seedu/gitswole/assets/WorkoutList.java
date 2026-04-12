@@ -128,6 +128,21 @@ public class WorkoutList {
     }
 
     /**
+     * Finds and returns the first workout that contains an exercise with the given name.
+     *
+     * @param exerciseName The name of the exercise to search for.
+     * @return The {@link Workout} containing the exercise, or {@code null} if not found anywhere.
+     */
+    public Workout getWorkoutByExerciseName(String exerciseName) {
+        for (Workout w : workouts) {
+            if (w.containsExercise(exerciseName)) {
+                return w;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the number of workouts in the list that are marked as done.
      *
      * @return The count of completed workouts.

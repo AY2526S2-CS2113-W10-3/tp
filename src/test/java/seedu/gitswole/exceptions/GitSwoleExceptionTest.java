@@ -36,11 +36,11 @@ class GitSwoleExceptionTest {
     }
 
     @Test
-    @DisplayName("DEFAULT error message is generic")
+    @DisplayName("DEFAULT error message returns the command string directly")
     void defaultError_message() {
         GitSwoleException e = new GitSwoleException(
-            GitSwoleException.ErrorType.DEFAULT, "anything");
-        assertTrue(e.getMessage().contains("Error"));
+            GitSwoleException.ErrorType.DEFAULT, "praveen was here");
+        assertEquals("praveen was here", e.getMessage());
     }
 
     @Test

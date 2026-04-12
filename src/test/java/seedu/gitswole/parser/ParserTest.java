@@ -251,5 +251,29 @@ class ParserTest {
     void parseValue_multiWordValue() {
         assertEquals("bench press", Parser.parseValue("add e/bench press wt/60", "e/"));
     }
+
+    @Test
+    @DisplayName("parseValue handles remark/ flag correctly")
+    void parseValue_withRemark() {
+        String input = "log e/Bench Press w/Push Day remark/Lightweight babyyy";
+        assertEquals("Push Day", Parser.parseValue(input, "w/"));
+        assertEquals("Bench Press", Parser.parseValue(input, "e/"));
+    }
+
+    @Test
+    @DisplayName("validateNoUnknownFlags throws exception for unknown flags")
+    void validateNoUnknownFlags_unknownFlags_throws() {
+        String input = "log e/bench wol/1001 praveen/";
+        GitSwoleException ex = assertThrows(GitSwoleException.class, 
+            () -> Parser.validateNoUnknownFlags(input, "e/", "w/"));
+        assertEquals("I don't recognise the flags \"wol/\", \"praveen/\". Please check your spelling and try again!", 
+            ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("validateNoUnknownFlags passes for valid flags")
+    void validateNoUnknownFlags_validFlags_passes() throws GitSwoleException {
+        Parser.validateNoUnknownFlags("log e/bench w/push remark/good", "e/", "w/");
+    }
 }
 //@@author
