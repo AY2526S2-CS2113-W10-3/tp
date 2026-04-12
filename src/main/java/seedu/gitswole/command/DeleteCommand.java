@@ -93,30 +93,19 @@ public class DeleteCommand extends Command {
      * @param workouts The current list of workouts.
      */
     private void deleteExercise(WorkoutList workouts, Ui ui) {
-        int eIndex = arguments.indexOf("e/");
-        int wIndex = arguments.indexOf("w/");
+        // Use Parser to safely isolate the names and ignore trailing stat flags
+        String exerciseName = Parser.parseValue(arguments, "e/");
+        String workoutName = Parser.parseValue(arguments, "w/");
 
-        // This method is only called if arguments.contains("e/") was true, so eIndex MUST NOT be -1
-        assert eIndex != -1 : "eIndex should not be -1 because execute() confirmed 'e/' exists";
-
-        // Ensure both prefixes exist and "e/" comes before "w/"
-        if (eIndex == -1 || wIndex == -1 || eIndex > wIndex) {
-            LOGGER.log(Level.WARNING, "DeleteExercise failed: Invalid flag order or missing flags.");
-            // Print out the warning gracefully instead of throwing an exception
+        if (exerciseName == null || workoutName == null) {
+            LOGGER.log(Level.WARNING, "DeleteExercise failed: Missing e/ or w/ flags.");
             ui.showMessage("Invalid format! Please use: delete e/EXERCISE w/WORKOUT");
             return;
         }
 
-        // Extract the exercise name between "e/" and "w/"
-        String exerciseName = arguments.substring(eIndex + 2, wIndex).trim();
-
-        // Extract the workout name after "w/"
-        String remainingArgs = arguments.substring(wIndex + 2).trim();
-        String workoutName = remainingArgs;
-
         if (exerciseName.isEmpty() || workoutName.isEmpty()) {
             LOGGER.log(Level.WARNING, "DeleteExercise failed: Empty exercise ({0}) or workout ({1}) name.",
-                new Object[]{exerciseName, workoutName});
+                    new Object[]{exerciseName, workoutName});
             ui.showMessage("Exercise or Workout name cannot be empty. Usage: delete e/EXERCISE w/WORKOUT");
             ui.showMessage("________________________________________________________________________________" +
                     "____________________");
@@ -131,7 +120,7 @@ public class DeleteCommand extends Command {
                     "____________________");
         } else {
             ui.showMessage("'" + exerciseName + "' or workout '" + workoutName
-                + "' not found. Please check your spelling.");
+                    + "' not found. Please check your spelling.");
             ui.showMessage("________________________________________________________________________________" +
                     "____________________");
         }

@@ -134,9 +134,24 @@ public class AddCommand extends Command {
             throw new GitSwoleException(GitSwoleException.ErrorType.IDX_OUTOFBOUNDS, workoutName);
         }
 
-        int weight = Parser.parseOptionalInt(response, "wt/", 0);
-        int sets = Parser.parseOptionalInt(response, "s/", 0);
-        int reps = Parser.parseOptionalInt(response, "r/", 0);
+        if (targetWorkout.containsExercise(exerciseName)) {
+            LOGGER.log(Level.WARNING, "AddExercise failed: Duplicate exercise '{0}' in '{1}'.",
+                new Object[]{exerciseName, workoutName});
+            throw new GitSwoleException(
+                GitSwoleException.ErrorType.DEFAULT,
+                "An exercise named '" + exerciseName + "' already exists in '" + workoutName + "'! " +
+                        "If you are doing different variations, try adding a number (e.g., " + exerciseName + " 2)."
+            );
+        }
+
+
+        String weightStr = Parser.parseValue(response, "wt/");
+        String setsStr = Parser.parseValue(response, "s/");
+        String repsStr = Parser.parseValue(response, "r/");
+
+        int weight = parseAndValidateNumericFlag(weightStr, "weight", "wt/");
+        int sets = parseAndValidateNumericFlag(setsStr, "sets", "s/");
+        int reps = parseAndValidateNumericFlag(repsStr, "reps", "r/");
 
         if (weight < 0) {
             throw new GitSwoleException(
@@ -160,5 +175,29 @@ public class AddCommand extends Command {
         targetWorkout.addExercise(new Exercise(exerciseName, weight, sets, reps));
         ui.showMessage("Your exercise has been successfully added! Looking swole g");
         ui.showLine();
+    }
+    /**
+     * Safely parses a numeric flag. If the flag is omitted (null or empty), it returns 0.
+     * If the flag is present but not a valid integer, it throws a GitSwoleException.
+     *
+     * @param value     The raw string value extracted from the user's input.
+     * @param fieldName The human-readable name of the field (e.g., "weight").
+     * @param flag      The prefix used for the field (e.g., "wt/").
+     * @return The parsed integer, or 0 if omitted.
+     * @throws GitSwoleException If the value cannot be parsed as an integer.
+     */
+    private int parseAndValidateNumericFlag(String value, String fieldName, String flag) throws GitSwoleException {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            throw new GitSwoleException(
+                GitSwoleException.ErrorType.DEFAULT,
+                "Invalid input for " + fieldName + ": '" + value +
+                        "'. Please enter a valid number (e.g., " + flag + "10)."
+            );
+        }
     }
 }

@@ -37,6 +37,24 @@ public class Workout {
     }
 
     /**
+     * Checks if an exercise with the given name already exists in this workout.
+     * Case-insensitive to prevent bypasses like "Bench" vs "bench".
+     * @param exerciseName The name of the exercise to check.
+     * @return true if the exercise exists, false otherwise.
+     */
+    public boolean containsExercise(String exerciseName) {
+        if (exerciseName == null || exerciseName.isBlank()) {
+            return false;
+        }
+        for (Exercise e : exerciseList) {
+            if (e.getExerciseName().equalsIgnoreCase(exerciseName.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Removes an exercise from this workout session by its name.
      *
      * @param exerciseName The name of the exercise to remove.
