@@ -451,6 +451,8 @@ log e/EXERCISE_NAME [w/WORKOUT_NAME] [wt/WEIGHT] [s/SETS] [r/REPS] [remark/REMAR
 
 * If `w/` is omitted, the most recent active session name is used (Sticky Session).
 * If `wt/`, `s/`, or `r/` are omitted, the current values stored in the workout template are used.
+* Command can be used on the same exercise to edit the details.
+* Once exercise logged, the new weight is updated to workout list for easy access!
 
 **Example:**
 ```
