@@ -5,6 +5,9 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
+sourceCompatibility = 17
+targetCompatibility = 17
+
 repositories {
     mavenCentral()
 }
@@ -35,7 +38,7 @@ application {
 shadowJar {
     manifest {
         attributes(
-            'Main-Class': 'seedu.gitswole.GitSwole'
+                'Main-Class': 'seedu.gitswole.GitSwole'
         )
     }
 }
