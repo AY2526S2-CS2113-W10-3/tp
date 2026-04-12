@@ -92,8 +92,14 @@ add w/WORKOUT
 **Example:**
 ```
 Input:  add w/push
-Output: Successfully added a Push Session! Remember to add your exercises :)
+Output: Successfully added a push session! Remember to add your exercises :)
 ```
+
+> **Note:** Workout names are case-insensitive. Attempting to add a workout whose name already exists (in any case) will be rejected:
+> ```
+> Input:  add w/PUSH
+> Output: Workout 'PUSH' already exists. Try a different name.
+> ```
 
 ---
 
@@ -293,10 +299,8 @@ GitSwole maintains two data files, both created automatically on first run:
 
 Saving is fully automatic — every mutating command (`add`, `delete`, `edit`, `mark`, `log`) writes changes to disk immediately. There is no manual "save" command. On the next launch, GitSwole reloads your data from these files.
 
-> **Note:** The ```|``` character is used internally as a field delimiter. 
-> If your workout or exercise names contain ```|```, it will be escaped automatically, 
-> but it is best to avoid this character in names to prevent confusion when reading the raw file.  
-
+> **Note:** The ```|``` character is reserved for internal use as a field delimiter in `data/workouts.txt`.
+> Workout and exercise names cannot contain ```|``` — attempting to use it will be rejected with an error message.
 > **Note:** You may edit `data/workouts.txt` or `data/history.txt` by hand, but malformed entries may cause loading errors. Always keep a backup before manual edits.
  
 ---

@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+
 /**
  * Represents a command that lists logged workout history.
  * <p>
@@ -21,6 +26,9 @@ import java.util.logging.Level;
  * </ul>
  */
 public class LogListCommand extends Command {
+    private static final DateTimeFormatter DATE_FORMAT =
+            DateTimeFormatter.ofPattern("dd-MM-uuuu").withResolverStyle(ResolverStyle.STRICT);
+
     private String response;
     private HistoryStorage historyStorage;
 
@@ -118,6 +126,13 @@ public class LogListCommand extends Command {
         if (date == null || date.isEmpty()) {
             throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND,
                     "invalid command. format: loglist d/DATE");
+        }
+
+        try {
+            LocalDate.parse(date, DATE_FORMAT);
+        } catch (DateTimeParseException e) {
+            throw new GitSwoleException(GitSwoleException.ErrorType.INCOMPLETE_COMMAND,
+                    "Invalid date format. Expected dd-MM-yyyy (e.g. 10-04-2026)");
         }
 
         List<String> entries = historyStorage.getEntriesByDate(date);

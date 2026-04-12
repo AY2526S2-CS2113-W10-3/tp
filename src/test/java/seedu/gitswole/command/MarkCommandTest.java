@@ -52,7 +52,7 @@ public class MarkCommandTest {
     void markWorkout_validName_printsStatusIcon() throws GitSwoleException {
         workouts.addWorkout(new Workout("push"));
         new MarkCommand("mark w/push").execute(workouts, ui);
-        assertTrue(outContent.toString().contains("[X] push"));
+        assertTrue(outContent.toString().contains("Successfully marked 'push' as done!"));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class MarkCommandTest {
         push.markDone(true);
         workouts.addWorkout(push);
         new MarkCommand("unmark w/push").execute(workouts, ui);
-        assertTrue(outContent.toString().contains("[ ] push"));
+        assertTrue(outContent.toString().contains("Successfully unmarked 'push'!"));
     }
 
     @Test

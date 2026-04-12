@@ -216,4 +216,21 @@ public class Parser {
             return defaultValue;
         }
     }
+
+    /**
+     * Validates that a name does not contain reserved characters that conflict
+     * with the storage file format.
+     *
+     * @param name       The name to validate.
+     * @param fieldLabel A human-readable label for error messages (e.g. "Workout").
+     * @throws GitSwoleException If the name contains a reserved character.
+     */
+    public static void validateName(String name, String fieldLabel) throws GitSwoleException {
+        if (name != null && name.contains("|")) {
+            throw new GitSwoleException(
+                    GitSwoleException.ErrorType.NEG_INPUT,
+                    fieldLabel + " name cannot contain the '|' character (reserved for storage)."
+            );
+        }
+    }
 }

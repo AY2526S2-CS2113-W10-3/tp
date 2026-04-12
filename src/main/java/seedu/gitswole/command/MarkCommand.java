@@ -73,9 +73,9 @@ public class MarkCommand extends Command {
                 new Object[]{workoutName, isDone ? "done" : "not done"});
 
         if (isDone) {
-            ui.showMessage("[X] " + target.getWorkoutName());
+            ui.showMessage("Successfully marked '" + target.getWorkoutName() + "' as done!");
         } else {
-            ui.showMessage("[ ] " + target.getWorkoutName());
+            ui.showMessage("Successfully unmarked '" + target.getWorkoutName() + "'!");
         }
         ui.showLine();
     }
