@@ -319,7 +319,13 @@ Output: Successfully unmarked 'push'!
 ```
 
 > **Note:** Completion status is shown in `list` as `[X]` (done) or `[ ]` (not done).
-
+> 
+> `mark` and `log` serve different purposes and are intentionally kept separate.
+> `log w/WORKOUT` starts a session and records performance data — it does not automatically
+> mark the workout as done, since users may log exercises mid-session or plan ahead for future
+> sessions. Use `mark w/WORKOUT` explicitly when you consider a workout fully completed.
+> This gives you full control over your weekly completion checklist independently of your
+> training log history.
 ---
 ### Feature 13: Storage
 
