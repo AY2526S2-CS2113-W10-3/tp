@@ -20,9 +20,7 @@ Total: **976 LoC** (319 functional) — primary files created include `LogListCo
 
 ### New Feature: Add Workout Session and Add Exercise (`AddCommand`)
 
-**What it does:** Allows users to create a new workout session (`add w/WORKOUT`) or add an exercise with its stats to an existing session (`add e/EXERCISE w/WORKOUT wt/WEIGHT s/SETS r/REPS`).
-
-**Justification:** This is the entry point for all user data — without the ability to add workouts and exercises, none of the other features have anything to operate on. Getting this right was critical for the rest of the team to build on top of.
+Allows users to create new sessions (`add w/WORKOUT`) or add specific exercise stats (`add e/EXERCISE w/WORKOUT wt/WEIGHT s/SETS r/REPS`). This serves as the primary entry point for all user data, making it the critical foundation for all other app features.
 
 **Highlights:** The trickiest part was handling multi-word exercise and workout names. The default parser assumed single-token inputs, so I redesigned the parsing logic in both `AddCommand.java` and `Parser.java` to correctly extract flag-delimited values even when names contained spaces.
 
@@ -30,9 +28,7 @@ Total: **976 LoC** (319 functional) — primary files created include `LogListCo
 
 ### New Feature: Mark/Unmark Workout Completion (`MarkCommand`)
 
-**What it does:** Lets users mark a workout session as complete or incomplete, with a visible status symbol shown alongside the workout when listed — e.g. `[X] Push Day` for completed, `[ ] Push Day` for incomplete.
-
-**Justification:** Users need a way to track which sessions they have actually completed, not just planned. A visible completion indicator makes it easy to review progress at a glance without relying on memory.
+Provides a way to track session completion with visible status symbols (e.g., `[X]` for completed, `[ ]` for incomplete). This allows users to review their actual progress at a glance rather than relying on memory.
 
 **Highlights:** The status symbol required coordinated changes across `MarkCommand.java`, `ListCommand.java`, and `Ui.java` to ensure display consistency regardless of how the list was accessed. The implementation was refined across several PRs based on team feedback.
 
@@ -40,9 +36,7 @@ Total: **976 LoC** (319 functional) — primary files created include `LogListCo
 
 ### New Feature: View Workout Log History (`LogListCommand`)
 
-**What it does:** Displays a chronological history of the user's completed workout sessions via the `loglist` command.
-
-**Justification:** Logging a workout is only useful if the user can look back at it. Without a retrieval mechanism, the log data written by `LogCommand` would be completely invisible from within the app.
+Displays a chronological history of the user's completed workout sessions. This is essential for the "tracking" aspect of the app, as it allows users to retrieve data written to disk.
 
 **Highlights:** This was my most technically involved feature. I built `LogListCommand.java` from scratch and created `HistoryStorage.java` to handle reading workout history from disk. Managing file I/O correctly — ensuring history is read in the right order and gracefully handling edge cases like an empty history file — required the most iteration. `LogListCommand` is my top contributor by LoC (169 lines of functional code, 187 lines of test code).
 
@@ -60,11 +54,10 @@ Total: **976 LoC** (319 functional) — primary files created include `LogListCo
 
 ## Community
 
-* Reviewed PR [#38](https://github.com/AY2526S2-CS2113-W10-3/tp/pull/38) by rpraveen7 (`fix-ci-errors`), resolving merge conflicts with upstream master to unblock the team's CI pipeline.
-
-* Reviewed PR [#99](https://github.com/AY2526S2-CS2113-W10-3/tp/pull/99) by rpraveen7 (`coding-standards-check`), a refactoring PR covering Javadoc additions for `WorkoutList.java` and `Workout.java`, a variable rename in `Ui.java` for clarity, type explicitness improvements in `GitSwole.java`, and architectural simplification of static field initialization — all verified to pass Checkstyle and existing tests.
-
-* Reported bugs and suggestions for other teams in the class during PE dry run.
+* **Technical PR Reviews:**
+  * Reviewed PR #38: Resolved merge conflicts with the upstream master to unblock the team's CI pipeline.
+  * Reviewed PR #99: A major refactoring PR. Verified Javadoc additions, variable renames for clarity, and architectural simplifications to ensure they passed Checkstyle and existing tests.
+* **Quality Assurance:** Reported bugs and provided UX suggestions for other teams during the Practical Exam (PE) dry run.
 
 ---
 
