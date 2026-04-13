@@ -66,7 +66,8 @@ public class FindCommand extends Command {
 
         if (!found) {
             LOGGER.log(Level.INFO, "No matches found for keyword: {0}", keyword);
-            ui.showMessage("No matching workouts or exercises found :(");
+            ui.showMessage("No matching workouts or exercises found :( ");
+            ui.showMessage("Correct command format: find KEYWORD (Don't need to add w/ and e/)");
         }
         ui.showLine();
     }
