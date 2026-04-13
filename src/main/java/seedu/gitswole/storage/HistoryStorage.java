@@ -52,10 +52,10 @@ public class HistoryStorage {
         List<String> lines = Files.readAllLines(Paths.get(historyFilePath));
         String today = LocalDateTime.now().format(DATE_FORMATTER);
         String headerTrigger = "[" + today;
-        String workoutTrigger = workoutName.toUpperCase() + " workout";
+        String workoutTrigger = "] " + workoutName.toUpperCase() + " workout";
 
         for (String line : lines) {
-            if (line.startsWith(headerTrigger) && line.contains(workoutTrigger)) {
+            if (line.startsWith(headerTrigger) && line.endsWith(workoutTrigger)) {
                 return true;
             }
         }
@@ -111,10 +111,10 @@ public class HistoryStorage {
     private int findSessionStartIndex(List<String> lines, String workoutName) {
         String today = LocalDateTime.now().format(DATE_FORMATTER);
         String trigger = "[" + today;
-        String workoutHeader = workoutName.toUpperCase() + " workout";
+        String workoutHeader = "] " + workoutName.toUpperCase() + " workout";
 
         for (int i = lines.size() - 1; i >= 0; i--) {
-            if (lines.get(i).startsWith(trigger) && lines.get(i).contains(workoutHeader)) {
+            if (lines.get(i).startsWith(trigger) && lines.get(i).endsWith(workoutHeader)) {
                 return i;
             }
         }
@@ -204,11 +204,11 @@ public class HistoryStorage {
         ensureFileExists();
         List<String> lines = Files.readAllLines(Paths.get(historyFilePath));
         List<String> result = new ArrayList<>();
-        String workoutTrigger = workoutName.toUpperCase() + " workout";
+        String workoutTrigger = "] " + workoutName.toUpperCase() + " workout";
 
         boolean inMatchingSession = false;
         for (String line : lines) {
-            if (line.contains(workoutTrigger)) {
+            if (line.endsWith(workoutTrigger)) {
                 inMatchingSession = true;
             } else if (line.startsWith("---")) {
                 if (inMatchingSession) {
