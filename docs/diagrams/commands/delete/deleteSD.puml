@@ -16,13 +16,29 @@ alt arguments.contains("e/")
 
     alt invalid flag order (eIndex > wIndex) or missing flags
         Command -> Logger : log(WARNING, "DeleteExercise failed...")
+        activate Logger
+        Logger --> Command
+        deactivate Logger
+
         Command -> Ui : showMessage("Invalid format! Please use: delete e/EXERCISE w/WORKOUT")
+        activate Ui
+        Ui --> Command
+        deactivate Ui
+
     else valid flags
         Command -> Command : parse exerciseName & workoutName
 
         alt empty exercise or workout name
             Command -> Logger : log(WARNING, "DeleteExercise failed: Empty...")
+            activate Logger
+            Logger --> Command
+            deactivate Logger
+
             Command -> Ui : showMessage("Exercise or Workout name cannot be empty...")
+            activate Ui
+            Ui --> Command
+            deactivate Ui
+
         else valid names
             Command -> WorkoutList : removeExercise(workoutName, exerciseName)
             activate WorkoutList
@@ -31,11 +47,18 @@ alt arguments.contains("e/")
 
             alt isDeleted == true
                 Command -> Ui : showMessage("Successfully deleted '...' from '...'!")
+                activate Ui
+                Ui --> Command
+                deactivate Ui
             else isDeleted == false
                 Command -> Ui : showMessage("'...' or workout '...' not found...")
+                activate Ui
+                Ui --> Command
+                deactivate Ui
             end
         end
     end
+    Command --> Command
     deactivate Command
 
 else arguments.contains("w/")
@@ -46,7 +69,15 @@ else arguments.contains("w/")
 
     alt empty workout name
         Command -> Logger : log(WARNING, "DeleteWorkout failed: Workout name is empty.")
+        activate Logger
+        Logger --> Command
+        deactivate Logger
+
         Command -> Ui : showMessage("Please specify the workout name...")
+        activate Ui
+        Ui --> Command
+        deactivate Ui
+
     else valid name
         Command -> WorkoutList : removeWorkout(workoutName)
         activate WorkoutList
@@ -55,20 +86,37 @@ else arguments.contains("w/")
 
         alt isDeleted == true
             Command -> Ui : showMessage("Successfully deleted the ... session!")
+            activate Ui
+            Ui --> Command
+            deactivate Ui
         else isDeleted == false
             Command -> Ui : showMessage("'...' not found. Please check your spelling.")
+            activate Ui
+            Ui --> Command
+            deactivate Ui
         end
     end
+    Command --> Command
     deactivate Command
 
 else invalid format
     Command -> Logger : log(WARNING, "Invalid delete format received: ...")
+    activate Logger
+    Logger --> Command
+    deactivate Logger
+
     Command -> Ui : showMessage("Invalid delete format!")
+    activate Ui
+    Ui --> Command
+    deactivate Ui
+
     Command -> Ui : showMessage("Use: delete w/WORKOUT  OR  delete e/EXERCISE w/WORKOUT")
+    activate Ui
+    Ui --> Command
+    deactivate Ui
 end
 
 Command --> Caller
-destroy Logger
 deactivate Command
 
 @enduml

@@ -5,7 +5,7 @@
 GitSwole provides fast, CLI-based workout tracking for gym-goers who dislike slow GUI apps and manual logs. 
 Single-command entry enables efficient logging of exercises, sets, and weights, with instant access to workout history 
 and progress tracking optimized for keyboard-comfortable users.
- It is written in Java, and has about 700 LoC.
+It is written in Java, and has about 3000 LoC.
 
 Given below are my contributions to the project.
 

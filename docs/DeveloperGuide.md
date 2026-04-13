@@ -329,8 +329,7 @@ The user specifies the target by its position number in the list (e.g. `delete 1
 
 This diagram shows the sequence in which the delete command is entered.
 
-<img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" width="950" />
-
+<img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" alt="Sequence diagram showing the execution flow of the DeleteCommand" width="950"/>
 ---
 
 ### Edit Workout and Exercise Feature (`EditCommand`)
@@ -686,18 +685,18 @@ GitSwole enables fitness-focused CLI users to manage, log, and track workouts en
 
 ## User Stories
 
-| Version | As a ...                                                    | I want to ...                                                                      | So that I can ...                                                                    |
-|---------|-------------------------------------------------------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| v1.0    | new user                                                    | see all available commands and their usage syntax                                  | quickly learn how to use the application without referring to external docs          |
-| v1.0    | gym-goer planning my first workout                          | add workouts and exercises with their weight, sets, and reps                       | build and keep track of my training routine, so that I would have a plan when I go to the gym |
-| v1.0    | user who just finished their gym session                    | quickly log my workout with a simple command                                       | record my progress without spending so much time typing                              |
-| v1.0    | user who wants to seeriously use the app to manage workouts | clear sample or preloaded data witih one command                                   | start afresh with the workouts that I want to use                                    |
-| v1.0    | first time user who is confused about how to use the app    | have a list of the commands I can type into the CLI                                | get started quickly without reading lengthy documentation                            |
-| v2.0    | methodical user                                             | edit the name or details of an existing workout or exercise                        | correct mistakes or update my training plan without deleting and re-adding           |
-| v2.0    | neat user who wants to keep track of completed workouts     | mark the workout and exercise as done                                              | so that i can visually confirm my progress                                           |
-| v2.0    | committed fitspo                                            | view all my past logged workout sessions in a single command                       | identify trends or gaps in my routine and plan my next workout better                |
-| v2.0    | reflective gym-goer                                         | log remarks for each exercise during a session                                     | remember how each session felt and track qualitative progress over time              |
-| v2.0    | busy student                                                | see a summary of total workout duration and total volume after finishing a session | I can feel productive before heading back to study                                   |
+| Version | As a ...                                                   | I want to ...                                               | So that I can ...                                                                    |
+|---------|------------------------------------------------------------|-------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| v1.0    | new user                                                   | see all available commands and their usage syntax           | quickly learn how to use the application without referring to external docs          |
+| v1.0    | gym-goer planning my first workout                         | add workouts and exercises with their weight, sets, and reps | build and keep track of my training routine, so that I would have a plan when I go to the gym |
+| v1.0    | user who just finished their gym session                   | quickly log my workout with a simple command                | record my progress without spending so much time typing                              |
+| v1.0    | user who wants to seriously use the app to manage workouts | clear sample or preloaded data witih one command            | start afresh with the workouts that I want to use                                    |
+| v1.0    | first time user who is confused about how to use the app   | have a list of the commands I can type into the CLI         | get started quickly without reading lengthy documentation                            |
+| v2.0    | methodical user                                            | edit the name or details of an existing workout or exercise | correct mistakes or update my training plan without deleting and re-adding           |
+| v2.0    | neat user who wants to keep track of completed workouts    | mark the workout and exercise as done                       | so that i can visually confirm my progress                                           |
+| v2.0    | committed fitspo                                           | view all my past logged workout sessions in a single command | identify trends or gaps in my routine and plan my next workout better                |
+| v2.0    | reflective gym-goer                                        | log remarks for each exercise during a session              | remember how each session felt and track qualitative progress over time              |
+| v2.0    | busy student                                               | see a summary of my workout quickly with just one command   | I can feel productive before heading back to study                                   |
 
 
 ---
