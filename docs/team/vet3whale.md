@@ -71,7 +71,7 @@ returns the appropriate `Command` subclass.
 * Reviewed teammates PRs before merging.
 * Reported bugs and suggestions for other teams in the class.
 * Created Issues and Milestone tracker for ease of workflow tracking.
-* 
+
 ---
 
 ### Documentation
