@@ -37,9 +37,8 @@ returns the appropriate `Command` subclass.
 **Justification:** A delete-and-re-add workflow is too disruptive for routine updates and typo fixes, so in-place editing with selective field updates was used instead.
 
 **Highlights:**
-- Numeric fields (`wt/`, `s/`, `r/`) are independently optional — omitted fields are left unchanged.
+- Numeric fields (`wt/`, `s/`, `r/`) are independently optional - omitted fields are left unchanged.
 - Invalid values (negative, out-of-range) are caught and the user is prompted to retry.
-- A `hasChanged` flag tracks whether any field was actually modified, preventing false confirmation messages.  
 
 ---
 
@@ -51,12 +50,10 @@ returns the appropriate `Command` subclass.
 
 ### Project Management
 
-* **Architectural Foundation:** Designed and implemented the end-to-end skeleton of the application
-  before feature development began, unblocking all teammates to build commands independently.
-* **Parser Design:** Established `parseCommand` and `readResponse`, along with the groundwork
-  to parse user input and map the chosen command keyword to its corresponding `CommandType` via a `HashMap`.  
-  `HashMap` allows easier implementation of the addition of new features. 
-
+- **Architectural Foundation:** Designed and implemented the application skeleton before feature development began, 
+unblocking teammates to build commands independently.
+- **Parser Design:** Established `parseCommand` and `readResponse`, 
+mapping command keywords to `CommandType` via a `HashMap` for easy extensibility.
 ---
 
 ### Enhancements to Existing Features
