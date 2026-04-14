@@ -31,7 +31,7 @@ Given below are my contributions to the project.
 
 * **What it does:** Manages `history.txt`, recording training sessions with "Smart Overwriting" to prevent duplicate entries from user typos.
 * **Justification:** Essential for maintaining a clean chronological log. Ensures re-entering logs corrects the day's existing entry.
-* **Highlights:** Identifies session blocks by date/name for surgical updates. Uses precise matching to prevent workout name collisions.
+* **Highlights:** Identifies session blocks by date/name for surgical updates.
 
 ---
 
