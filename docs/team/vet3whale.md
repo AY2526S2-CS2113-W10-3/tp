@@ -25,6 +25,7 @@ The abstract `Command` class enforces a consistent `execute`/`isExit` interface 
 returns the appropriate `Command` subclass.
 - `Ui` centralises terminal I/O, keeping commands independently testable.
 - The assets layer exposes shared lookup methods (`getWorkoutByName`, `getExerciseByName`) used across commands.  
+
 ---
 
 ### New Feature: Workout and Exercise Editing (`EditCommand`)
@@ -39,6 +40,7 @@ returns the appropriate `Command` subclass.
 - Numeric fields (`wt/`, `s/`, `r/`) are independently optional — omitted fields are left unchanged.
 - Invalid values (negative, out-of-range) are caught and the user is prompted to retry.
 - A `hasChanged` flag tracks whether any field was actually modified, preventing false confirmation messages.  
+
 ---
 
 ### Code Contributed
